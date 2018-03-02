@@ -1,0 +1,27 @@
+inherit_from: .rubocop_todo.yml
+
+#inherit_from: .rubocop_todo.yml
+
+AllCops:
+  AllowSymlinksInCacheRootDirectory: true
+  TargetRubyVersion: 2.3
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/LineLength:
+  Max: 100
+
+Metrics/ParameterLists:
+  Exclude:
+    - 'lib/debsecan/package.rb'
+
+Style/NumericPredicate:
+  Exclude:
+    - 'spec/**/*'
+    - 'lib/debsecan/package.rb'
+
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
