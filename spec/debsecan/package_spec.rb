@@ -208,11 +208,9 @@ RSpec.describe Debsecan::Package do
     end
     # rubocop:enable Lint/UselessComparison
 
-    # rubocop:disable Style/CaseEquality
     it 'old === new should eq true' do
       expect(old === new).to eq(true)
     end
-    # rubocop:enable Style/CaseEquality
 
     it 'old <= new should eq true' do
       expect(old <= new).to  eq(true)

@@ -1,7 +1,25 @@
 # frozen_string_literal: true
 
-require 'singleton'
 module Debsecan
+  # All available Package and Database strategies available to the library.
+  #
+  # @return [Array<Object>]
+  def self.strategies
+    @strategies ||= []
+  end
+
+  def self.config
+    Configuration.instance
+  end
+
+  def self.configure
+    yield config
+  end
+
+  def self.logger
+    config.logger
+  end
+
   # Gem configuration.
   class Configuration
     include Singleton

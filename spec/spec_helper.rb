@@ -1,7 +1,15 @@
 # frozen_string_literal: true
 
-require 'bundler/setup'
+require 'rainbow'
+Rainbow.enabled = false
+
+require 'support/coverage'
+
+require 'webmock/rspec'
+
 require 'debsecan'
+
+Dir["#{__dir__}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

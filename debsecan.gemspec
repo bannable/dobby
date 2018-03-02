@@ -5,9 +5,10 @@ require File.expand_path('lib/debsecan/version', __dir__)
 # rubocop:disable Metrics/BlockLength
 Gem::Specification.new do |spec|
   spec.name          = 'debsecan'
-  spec.version       = Debsecan::VERSION
+  spec.version       = Debsecan::Version::STRING
   spec.platform      = Gem::Platform::RUBY
   spec.authors       = ['Joe Truba']
+  spec.email         = ['jtruba@meraki.net', 'joe@bannable.net']
 
   spec.summary       = 'Vulnerability reporter for dpkg systems'
   spec.description   = <<-DESCRIPTION
@@ -27,28 +28,30 @@ Gem::Specification.new do |spec|
     'bug_tracker_uri' => 'https://github.com/meraki/debsecan/issues'
   }
 
-  spec.files = `git ls-files -z`.split("\x0").reject do |f|
-    f.match(%r{^(spec|features)/})
-  end
-  spec.bindir        = 'bin'
+  spec.bindir        = 'exe'
   spec.executables   = 'debsecan'
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'awesome_print', '~> 1.8'
-  spec.add_development_dependency 'bundler', '~> 1.16'
-  spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake', '~> 12.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 0.52'
+  spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'timecop', '~> 0.9'
+  spec.add_development_dependency 'webmock', '~> 3.4'
 
-  spec.add_dependency 'apt-pkg', ['~> 0.4', '>= 0.2']
-  spec.add_dependency 'curb', '~> 0.9'
-  spec.add_dependency 'hashie', '~> 3.5'
-  spec.add_dependency 'psych', '~> 3.0'
-  spec.add_dependency 'yard', '~> 0.9'
+  spec.add_runtime_dependency 'apt-pkg', ['~> 0.4', '>= 0.2']
+  spec.add_runtime_dependency 'curb', '~> 0.9'
+  spec.add_runtime_dependency 'hashie', '~> 3.5'
+  spec.add_runtime_dependency 'oj'
+  spec.add_runtime_dependency 'parallel', '~> 1.12'
+  spec.add_runtime_dependency 'powerpack', '~> 0.1'
+  spec.add_runtime_dependency 'pry'
+  spec.add_runtime_dependency 'pry-byebug'
+  spec.add_runtime_dependency 'rainbow', '~> 3'
+  spec.add_runtime_dependency 'ruby-progressbar', '~> 1.10'
+  spec.add_runtime_dependency 'yard', '~> 0.9.16'
 
   spec.requirements << 'libapt-pkg-dev > 1.0'
-  spec.requirements << 'bzr (when using VulnSrcUbuntu)'
+  spec.requirements << 'bzr (when using VulnSource::Ubuntu)'
 end
 # rubocop:enable Metrics/BlockLength

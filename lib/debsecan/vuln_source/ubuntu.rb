@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'hashie'
 module Debsecan
   module VulnSource
     # Vulnerability source for Ubuntu systems. This class uses the Ubuntu CVE

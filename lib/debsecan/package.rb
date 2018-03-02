@@ -12,7 +12,7 @@ module Debsecan
     MIN_VERSION = '|MIN|'
 
     # A required field was missing during initialization
-    class FieldRequiredError < DebsecanError
+    class FieldRequiredError < Error
       attr_reader :args, :field
       def initialize(field)
         super("Missing required field '#{field}'")
@@ -93,8 +93,6 @@ module Debsecan
       !target.nil? && version.compare_to(target.to_s) <= 0
     end
 
-    # rubocop:disable Style/CaseEquality
-
     # @param other [Package]
     #
     # @return [Boolean] True if other is present and other.package is the same as self.package
@@ -139,8 +137,6 @@ module Debsecan
     def !=(other)
       self === other && compare_to(other.version) != 0
     end
-
-    # rubocop:enable Style/CaseEquality
 
     # This method is wrapped by the standard comparison operators, but is provided for cases where
     #   it is not practical to compare two Package objects.

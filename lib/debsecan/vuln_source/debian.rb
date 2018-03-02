@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require 'curb'
-require 'json'
-require 'digest'
-
 module Debsecan
   module VulnSource
     # Vulnerability database source for Debian systems. This uses the JSON file
@@ -13,6 +9,7 @@ module Debsecan
 
       args %i[releases source url_prefix]
 
+      option :test_mode, false
       option :releases, [DEFAULT_RELEASE]
       option :source, 'https://security-tracker.debian.org/tracker/data/json'
       option :url_prefix, 'https://security-tracker.debian.org/tracker/'
@@ -34,10 +31,10 @@ module Debsecan
       )
 
       # Unable to retrieve or load a debsecan database
-      class NoDataError < DebsecanError; end
+      class NoDataError < Error; end
 
       # Received a non-200 response from the Security Tracker
-      class BadResponseError < DebsecanError
+      class BadResponseError < Error
         attr_accessor :curl
 
         def initialize(curl)
@@ -71,7 +68,7 @@ module Debsecan
         hash = Digest::SHA256.hexdigest(data)
         return UpdateResponse.new(false) if hash == @last_hash
 
-        debsecan = JSON.parse(data)
+        debsecan = Oj.load(data)
 
         vuln_entries = Hash.new { |h, k| h[k] = [] }
         debsecan.each do |package, vulns|

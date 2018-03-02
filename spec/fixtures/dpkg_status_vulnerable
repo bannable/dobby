@@ -1,0 +1,5 @@
+Package: asterisk
+Status: install ok installed
+Architecture: i386
+Version: 0.5.55
+Description: foobar

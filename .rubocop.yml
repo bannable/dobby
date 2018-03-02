@@ -15,6 +15,11 @@ Metrics/ParameterLists:
   Exclude:
     - 'lib/debsecan/package.rb'
 
+Style/CaseEquality:
+  Exclude:
+    - 'lib/debsecan/package.rb'
+    - 'spec/lib/debsecan/package_spec.rb'
+
 Style/NumericPredicate:
   Exclude:
     - 'spec/**/*'

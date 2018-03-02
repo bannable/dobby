@@ -1,70 +1,49 @@
 # frozen_string_literal: true
 
-require 'debsecan/version'
+require 'curb'
 require 'debian/apt_pkg'
-require 'psych'
+require 'digest'
 require 'hashie'
+require 'oj'
+require 'optparse'
+require 'pry'
+require 'psych'
+require 'pp'
+require 'rainbow'
+require 'singleton'
+require 'shellwords'
 
-# Library for injesting descriptions of dpkg based systems (primarily Debian
-# and Ubuntu), vulnerability databases for those distributions and identfying
-# which installed packages are subject to which vulnerability defects (if any).
-module Debsecan
-  autoload :Configuration,  'debsecan/configuration'
-  autoload :FlagManager,    'debsecan/flag_manager'
-  autoload :Database,       'debsecan/database'
-  autoload :Strategy,       'debsecan/strategy'
-  autoload :Severity,       'debsecan/severity'
-  autoload :Package,        'debsecan/package'
-  autoload :Scanner,        'debsecan/scanner'
-  autoload :Defect,         'debsecan/defect'
-  autoload :Dpkg,           'debsecan/dpkg'
+require 'powerpack/string/strip_indent'
+require 'powerpack/string/blank'
 
-  module PackageSource # rubocop:disable Style/Documentation
-    autoload :AbstractPackageSource, 'debsecan/package_source/abstract_package_source'
-    autoload :DpkgStatusFile,        'debsecan/package_source/dpkg_status_file'
-  end
+require_relative 'debsecan/version'
 
-  module VulnSource # rubocop:disable Style/Documentation
-    autoload :AbstractVulnSource,    'debsecan/vuln_source/abstract_vuln_source'
-    autoload :Debian,                'debsecan/vuln_source/debian'
-    autoload :Ubuntu,                'debsecan/vuln_source/ubuntu'
-  end
+require_relative 'debsecan/error'
+require_relative 'debsecan/update_response'
 
-  class DebsecanError < StandardError; end
-  class UnknownFilterError < DebsecanError; end
+require_relative 'debsecan/configuration'
+require_relative 'debsecan/database'
+require_relative 'debsecan/defect'
+require_relative 'debsecan/dpkg'
+require_relative 'debsecan/flag_manager'
+require_relative 'debsecan/package'
+require_relative 'debsecan/severity'
+require_relative 'debsecan/strategy'
 
-  # A generic response format.
-  class UpdateResponse
-    attr_reader :content
-    # @param changed [Boolean]
-    # @param content [Hash]
-    def initialize(changed, content = nil)
-      @changed = changed
-      @content = content
-    end
+require_relative 'debsecan/package_source/abstract_package_source'
+require_relative 'debsecan/package_source/dpkg_status_file'
 
-    # @return [Boolean]
-    def changed?
-      @changed == true
-    end
-  end
+require_relative 'debsecan/vuln_source/abstract_vuln_source'
+require_relative 'debsecan/vuln_source/debian'
+require_relative 'debsecan/vuln_source/ubuntu'
 
-  # All available Package and Database strategies available to the library.
-  #
-  # @return [Array<Object>]
-  def self.strategies
-    @strategies ||= []
-  end
+require_relative 'debsecan/formatter/colorizable'
+require_relative 'debsecan/formatter/abstract_formatter'
+require_relative 'debsecan/formatter/simple_formatter'
+require_relative 'debsecan/formatter/formatter_set'
 
-  def self.config
-    Configuration.instance
-  end
+require_relative 'debsecan/scanner'
 
-  def self.configure
-    yield config
-  end
-
-  def self.logger
-    config.logger
-  end
-end
+require_relative 'debsecan/options'
+require_relative 'debsecan/runner'
+require_relative 'debsecan/cli'

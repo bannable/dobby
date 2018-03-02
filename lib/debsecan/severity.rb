@@ -22,8 +22,8 @@ module Debsecan
 
       def <=>(other)
         return 0 if other == self
-        return -1 if SEVERITIES.index(self) < SEVERITIES.index(other)
-        1
+        return 1 if SEVERITIES.index(self) < SEVERITIES.index(other)
+        -1
       end
 
       def <(other)

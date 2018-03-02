@@ -5,7 +5,7 @@ module Debsecan
   class Database
     include Enumerable
 
-    class InitializationError < DebsecanError; end
+    class InitializationError < Error; end
 
     def initialize(strategy)
       @records = Hash.new { |h, k| h[k] = [] }

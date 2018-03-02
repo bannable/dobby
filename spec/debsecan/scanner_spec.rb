@@ -63,9 +63,6 @@ RSpec.describe Debsecan::Scanner do
   end
 
   describe '#scan' do
-    let(:vulnerable) { true }
-    let(:filtered?) { false }
-
     subject { scanner.scan(scan_args) }
 
     context 'package has defects' do

@@ -12,7 +12,7 @@ module Debsecan
       option :release, Dpkg.code_name
 
       # A Dpkg section has unexpected formatting
-      class DpkgFormatError < DebsecanError; end
+      class DpkgFormatError < Error; end
 
       # @return [Array<Package>]
       def parse
