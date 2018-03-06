@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe Debsecan::DpkgStatusFile do
+RSpec.describe Debsecan::PackageSource::DpkgStatusFile do
   let(:status_file) { File.join('./spec/fixtures', 'dpkg_status') }
-  let(:strategy) { Debsecan::DpkgStatusFile.new(file_path: status_file, release: 'wheezy') }
+  let(:strategy) { Debsecan::PackageSource::DpkgStatusFile.new(file_path: status_file, release: 'wheezy') }
 
   let(:packages) { strategy.parse }
   subject { packages }

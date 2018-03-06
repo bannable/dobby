@@ -16,12 +16,16 @@ module Debsecan
   autoload :Defect,         'debsecan/defect'
   autoload :Dpkg,           'debsecan/dpkg'
 
-  autoload :PackageSrc,     'debsecan/package_src'
-  autoload :DpkgStatusFile, 'debsecan/package_src/dpkg_status_file'
+  module PackageSource
+    autoload :AbstractPackageSource, 'debsecan/package_source/abstract_package_source'
+    autoload :DpkgStatusFile,        'debsecan/package_source/dpkg_status_file'
+  end
 
-  autoload :VulnSrc,        'debsecan/vuln_src.rb'
-  autoload :VulnSrcDebian,  'debsecan/vuln_src/debian'
-  autoload :VulnSrcUbuntu,  'debsecan/vuln_src/ubuntu'
+  module VulnSource
+    autoload :AbstractVulnSource,    'debsecan/vuln_source/abstract_vuln_source'
+    autoload :Debian,                'debsecan/vuln_source/debian'
+    autoload :Ubuntu,                'debsecan/vuln_source/ubuntu'
+  end
 
   class DebsecanError < StandardError; end
 

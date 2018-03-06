@@ -33,9 +33,11 @@ database for processing multiple package sets.
 ```ruby
 require 'debsecan'
 package_set = []
-[file1, file2].each { |f| package_set << Debsecan::DpkgStatusFile.new(file_path: f) }
+[file1, file2].each do |f|
+  package_set << Debsecan::PackageSource::DpkgStatusFile.new(file_path: f)
+end
 
-strategy = Debsecan::VulnSrcDebian.new
+strategy = Debsecan::VulnSource::Debian.new
 database = Debsecan::Database.new(strategy)
 scanner = Debsecan::Scanner.new(nil, database)
 
