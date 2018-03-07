@@ -2,7 +2,12 @@
 
 RSpec.describe Debsecan::PackageSource::DpkgStatusFile do
   let(:status_file) { File.join('./spec/fixtures', 'dpkg_status') }
-  let(:strategy) { Debsecan::PackageSource::DpkgStatusFile.new(file_path: status_file, release: 'wheezy') }
+  let(:strategy) do
+    Debsecan::PackageSource::DpkgStatusFile.new(
+      file_path: status_file,
+      release: 'wheezy'
+    )
+  end
 
   let(:packages) { strategy.parse }
   subject { packages }

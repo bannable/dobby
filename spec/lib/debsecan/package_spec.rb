@@ -36,12 +36,20 @@ RSpec.describe Debsecan::Package do
 
   context 'with missing fields' do
     shared_examples_for 'missing a required field raises an error' do |field|
-      it "raises FieldRequiredError when #{field} is missing" do
+      it "raises FieldRequiredError when #{field} is nil" do
         package_args[field] = nil
         expect { subject }.to raise_error do |error|
           expect(error).to be_a(Debsecan::Package::FieldRequiredError)
           expect(error.field).to eq(field.to_s)
           expect(error.message).to eq("Missing required field '#{field}'")
+        end
+      end
+
+      it "raises ArgumentError when #{field} is missing" do
+        package_args.delete(field)
+        expect { subject }.to raise_error do |error|
+          expect(error).to be_a(ArgumentError)
+          expect(error.message).to eq("missing keyword: #{field}")
         end
       end
     end
@@ -51,7 +59,52 @@ RSpec.describe Debsecan::Package do
     include_examples 'missing a required field raises an error', :release
   end
 
-  context 'package version comparisons' do
+  describe '#target_at_least?' do
+    let(:target) { '2' }
+    let(:new_ver) { '2' }
+    let(:old) { Debsecan::Package.new(name: 'foo', version: '1', release: 'test', target: target) }
+    let(:new) { Debsecan::Package.new(name: 'foo', version: new_ver, release: 'test') }
+
+    shared_examples_for 'targets at least' do |first, second|
+      it "returns #{first} for old->new" do
+        expect(old.target_at_least?(new)).to be first
+      end
+
+      it "returns #{second} for new->old" do
+        expect(new.target_at_least?(old)).to be second
+      end
+    end
+
+    context 'target version matches new version' do
+      include_examples 'targets at least', true, false
+    end
+
+    context 'target version is less than new version' do
+      let(:new_ver) { '3' }
+
+      include_examples 'targets at least', false, false
+    end
+
+    context 'target version is greater than new version' do
+      let(:target) { '3' }
+
+      include_examples 'targets at least', true, false
+    end
+
+    context 'target version is empty' do
+      let(:target) { '' }
+
+      include_examples 'targets at least', false, false
+    end
+
+    context 'target version is nil' do
+      let(:target) { nil }
+
+      include_examples 'targets at least', false, false
+    end
+  end
+
+  describe 'package version comparisons' do
     let(:old) { package }
     let(:new) { newer_package }
 

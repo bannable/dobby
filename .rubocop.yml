@@ -1,10 +1,8 @@
 inherit_from: .rubocop_todo.yml
 
-#inherit_from: .rubocop_todo.yml
-
 AllCops:
   AllowSymlinksInCacheRootDirectory: true
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.2
 
 Metrics/BlockLength:
   Exclude:

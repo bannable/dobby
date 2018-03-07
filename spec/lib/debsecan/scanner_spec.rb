@@ -2,7 +2,7 @@
 
 RSpec.describe Debsecan::Scanner do
   let(:package) { double('Package', name: 'foo', version: 1, target: target, source: nil) }
-  let(:package_source) { double('Package', name: 'bar', version: 1, target: target, source: 'foo') }
+  let(:package_source) { double('Package', name: 'bar', version: 1, target: target, source: 'baz') }
   let(:packages) { [package] }
 
   let(:db) { double('Debsecan::Database') }
@@ -41,14 +41,12 @@ RSpec.describe Debsecan::Scanner do
   let(:only_fixed) { false }
   let(:scan_args) { { filter: filter, only_fixed: only_fixed } }
   let(:release_matches) { true }
-  let(:present) { true }
   let(:fixed_in) { [package] }
   let(:defects) { [defect] }
   let(:target) { double('target') }
 
   before(:each) do
-    allow(db).to receive(:contains?) { present }
-    allow(db).to receive(:[]).and_return(defects)
+    allow(db).to receive(:defects_for).and_return(defects)
     allow(package).to receive(:release) { release_matches }
     allow(defect).to receive(:fixed_in) { fixed_in }
     allow(Psych).to receive(:load_file).and_return(flags)
@@ -79,6 +77,11 @@ RSpec.describe Debsecan::Scanner do
     subject { scanner.scan(scan_args) }
 
     context 'package has defects' do
+      context 'and refers to a source that is not known' do
+        let(:package) { package_source }
+        include_examples 'reports the defect'
+      end
+
       context 'only_fixed is false' do
         include_examples 'reports the defect'
       end
@@ -98,7 +101,7 @@ RSpec.describe Debsecan::Scanner do
     end
 
     context 'package has no defects' do
-      let(:present) { false }
+      let(:defects) { [] }
       include_examples 'does not report the defect'
     end
 
@@ -139,14 +142,19 @@ RSpec.describe Debsecan::Scanner do
 
   describe '#fixed_by_target' do
     let(:not_affected) { false }
-    let(:compare_result) { 0 }
+    let(:compare_result) { true }
 
     subject { scanner.fixed_by_target }
 
     context 'package has defects' do
       before(:each) do
         allow(package).to receive(:>=) { not_affected }
-        allow(package).to receive(:compare_to) { compare_result }
+        allow(package).to receive(:target_at_least?) { compare_result }
+      end
+
+      context 'and refers to a source that is not known' do
+        let(:package) { package_source }
+        include_examples 'reports the defect'
       end
 
       context 'but no target version' do
@@ -159,12 +167,6 @@ RSpec.describe Debsecan::Scanner do
         include_examples 'reports the defect'
       end
 
-      context 'fixed after the current version but before the target version' do
-        let(:compare_result) { -1 }
-
-        include_examples 'reports the defect'
-      end
-
       context 'fixed in an earlier version' do
         let(:not_affected) { true }
 
@@ -172,14 +174,14 @@ RSpec.describe Debsecan::Scanner do
       end
 
       context 'fixed after the target version' do
-        let(:compare_result) { 1 }
+        let(:compare_result) { false }
 
         include_examples 'does not report the defect'
       end
     end
 
     context 'package has no defects' do
-      let(:present) { false }
+      let(:defects) { [] }
       include_examples 'does not report the defect'
     end
   end

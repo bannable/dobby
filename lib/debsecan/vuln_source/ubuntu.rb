@@ -83,20 +83,25 @@ module Debsecan
       #
       # @return [Boolean]
       def branch_or_pull
-        success = false
         if Dir.exist?(options.local_repo_path)
-          Dir.chdir(local_repo_path) do
-            success = system(options.bzr.to_s, 'pull', '--overwrite')
-          end
+          pull(options.local_repo_path)
         else
-          FileUtils.mkdir_p options.local_repo_path
-          Dir.chdir(options.local_repo_path) do
-            # rubocop:disable Metrics/LineLength
-            success = system(options.bzr.to_s, 'branch', '--use-existing-dir', options.tracker_repo.to_s, '.')
-            # rubocop:enable Metrics/LineLength
-          end
+          branch(options.local_repo_path)
         end
-        success
+      end
+
+      def branch(path)
+        FileUtils.mkdir_p path
+        Dir.chdir(path) do
+          return system(options.bzr.to_s, 'branch', '--use-existing-dir',
+                        options.tracker_repo.to_s, '.')
+        end
+      end
+
+      def pull(path)
+        Dir.chdir(path) do
+          return system(options.bzr.to_s, 'pull', '--overwrite')
+        end
       end
 
       # Retrieve bazaar revision number

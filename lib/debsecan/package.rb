@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
+require 'debian/apt_pkg'
 module Debsecan
   # A Package describes a particular Debian package installation.
   # Debsecan::Package is adapted from Debian::Deb and Debian::Field
   #   source: https://anonscm.debian.org/cgit/pkg-ruby-extras/ruby-debian.git/tree/lib/debian.rb
   class Package
     # MaxVersion is a special value which is always sorted first.
-    MAX_VERSION = '|MAX|'
+    MAX_VERSION = '|MAX|'.freeze
 
     # MinVersion is a special value which is always sorted last.
-    MIN_VERSION = '|MIN|'
+    MIN_VERSION = '|MIN|'.freeze
 
     # A required field was missing during initialization
     class FieldRequiredError < DebsecanError
@@ -22,9 +23,9 @@ module Debsecan
 
     attr_reader :name
     attr_reader :version
+    attr_reader :release
     attr_reader :source
     attr_reader :dist
-    attr_reader :release
     attr_reader :arch
     attr_reader :target
 
@@ -54,13 +55,21 @@ module Debsecan
       "#{@name} #{@version}"
     end
 
+    # @param version [Package]
+    #
+    # @return [Boolean] True if the target version meets or exceeds the provided
+    #   package version
+    def target_at_least?(version)
+      version.compare_to(target.to_s) <= 0
+    end
+
     # rubocop:disable Style/CaseEquality
 
     # @param other [Package]
     #
     # @return [Boolean] True if other is present and other.package is the same as self.package
     def ===(other)
-      other && name == other.name
+      other && (name == other.name || source == other.name || other.source == name)
     end
 
     # @param other [Package]

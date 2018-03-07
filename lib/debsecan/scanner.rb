@@ -36,22 +36,24 @@ module Debsecan
     #   - :allowed to include only results flagged allowed
     #   - :whitelisted to include only results flagged whitelisted
     def scan(filter: :default, only_fixed: false)
-      filter = FLAG_FILTERS[filter] || FLAG_FILTERS[:default]
       @results.clear
-      @packages.each do |package|
-        pkg = source_or_package(package)
+      packages.each do |package|
+        @results.merge! scan_one(package, filter, only_fixed)
+      end
+      results
+    end
 
-        name = package.name
-        next unless @database.contains?(name)
-        @database[name].each do |defect|
-          next if only_fixed && !defect.fix_available?
-          next unless instance_exec(defect, &filter)
-          defect.fixed_in.each do |v|
-            @results[package] << defect if pkg.release == v.release && pkg < v
-          end
+    # For a given package, determine which packages affect it, if any.
+    def scan_one(package, filter = :default, only_fixed = false)
+      res = Hash.new { |h, k| h[k] = [] }
+      defects_for(package).each do |defect|
+        next if scan_filtered?(defect, filter, only_fixed)
+        defect.fixed_in.each do |v|
+          next unless defect_applies_for_scan?(package, v)
+          res[package] << defect
         end
       end
-      @results
+      res
     end
 
     # Determine which defects are resolved by upgrading to a target version.
@@ -67,27 +69,34 @@ module Debsecan
     # @note Packages that do not have a target version set are skipped.
     def fixed_by_target
       @results.clear
-      @packages.each do |package|
-        pkg = source_or_package(package)
-        next unless pkg.target
+      packages.each do |package|
+        next unless package.target
+        @results.merge! one_fixed_by_target(package)
+      end
+      results
+    end
 
-        name = package.name
-        next unless @database.contains?(name)
-        @database[name].each do |defect|
-          next unless defect.fix_available?
-
-          defect.fixed_in.each do |fix_version|
-            next unless pkg.release == fix_version.release
-            next if pkg >= fix_version
-            fixed_in_target = (fix_version.compare_to(pkg.target) <= 0)
-            @results[package] << defect if fixed_in_target
-          end
+    # For a specific package, determine which defects are resolved by upgrading
+    # to its' target version.
+    def one_fixed_by_target(package)
+      res = Hash.new { |h, k| h[k] = [] }
+      defects_for(package).each do |defect|
+        next unless defect.fix_available?
+        defect.fixed_in.each do |fix_version|
+          next if target_filtered?(package, fix_version)
+          res[package] << defect
         end
       end
-      @results
+      res
     end
 
     private
+
+    def target_filtered?(package, fix_version)
+      return true unless package.release == fix_version.release
+      return true if package >= fix_version
+      return true unless package.target_at_least?(fix_version)
+    end
 
     FLAG_FILTERS = {
       all: ->(_d) { true },
@@ -95,6 +104,20 @@ module Debsecan
       allowed: ->(d) { defect_has_flag(d, :allowed) },
       whitelisted: ->(d) { defect_has_flag(d, :whitelist) }
     }.freeze
+
+    def scan_filtered?(defect, filter, only_fixed)
+      return true if only_fixed && !defect.fix_available?
+      filter = select_filter(filter)
+      !instance_exec(defect, &filter)
+    end
+
+    def defect_applies_for_scan?(package, fixed_version)
+      package.release == fixed_version.release && package < fixed_version
+    end
+
+    def select_filter(filter)
+      FLAG_FILTERS[filter] || FLAG_FILTERS[:default]
+    end
 
     def flagged?(defect)
       @flags.map { |_k, v| v.key?(defect.identifier) }.reduce(&:|)
@@ -105,9 +128,8 @@ module Debsecan
       @flags[flag].key?(defect.identifier)
     end
 
-    def source_or_package(package)
-      return package unless package.source
-      @packages.find { |p| p.name == package.source && p.release == package.release }
+    def defects_for(package)
+      @database.defects_for(package)
     end
   end
 end

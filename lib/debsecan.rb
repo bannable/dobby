@@ -16,12 +16,12 @@ module Debsecan
   autoload :Defect,         'debsecan/defect'
   autoload :Dpkg,           'debsecan/dpkg'
 
-  module PackageSource
+  module PackageSource # rubocop:disable Style/Documentation
     autoload :AbstractPackageSource, 'debsecan/package_source/abstract_package_source'
     autoload :DpkgStatusFile,        'debsecan/package_source/dpkg_status_file'
   end
 
-  module VulnSource
+  module VulnSource # rubocop:disable Style/Documentation
     autoload :AbstractVulnSource,    'debsecan/vuln_source/abstract_vuln_source'
     autoload :Debian,                'debsecan/vuln_source/debian'
     autoload :Ubuntu,                'debsecan/vuln_source/ubuntu'
@@ -64,6 +64,6 @@ module Debsecan
     config.logger
   end
 
-  WHEEZY = 'wheezy'
-  XENIAL = 'xenial'
+  WHEEZY = 'wheezy'.freeze
+  XENIAL = 'xenial'.freeze
 end

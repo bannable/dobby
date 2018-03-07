@@ -13,6 +13,13 @@ module Debsecan
       raise InitializationError, 'Strategy did not update at initialize!' unless update
     end
 
+    # @param package [Package]
+    #
+    # @return [Array<Debsecan::Defect>]
+    def defects_for(package)
+      @records[package.name] | @records[package.source]
+    end
+
     # @param key [String] Package name
     #
     # @return [Array<Debsecan::Defect>] if the package has any, an array of {Defect}s
