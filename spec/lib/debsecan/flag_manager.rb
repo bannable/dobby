@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 require 'timecop'
-require 'psych'
 RSpec.describe Debsecan::FlagManager do
   let(:user1) { double('user1') }
   let(:user2) { double('user2') }

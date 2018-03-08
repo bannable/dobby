@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'debian/apt_pkg'
 module Debsecan
   module PackageSource
     # Defines a strategy for creating a {Package} array from /var/lib/dpkg/status

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'debian/apt_pkg'
 module Debsecan
   # A Package describes a particular Debian package installation.
   # Debsecan::Package is adapted from Debian::Deb and Debian::Field

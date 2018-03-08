@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require 'debsecan/version'
+require 'debian/apt_pkg'
+require 'psych'
+require 'hashie'
 
 # Library for injesting descriptions of dpkg based systems (primarily Debian
 # and Ubuntu), vulnerability databases for those distributions and identfying

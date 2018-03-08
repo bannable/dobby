@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'psych'
-
 module Debsecan
   # Compares a {Database} and {Array<Package>} to discover what defects
   #   affect a system.

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'hashie/mash'
-
 module Debsecan
   # The Strategy provides base functionality for defining how Debsecan takes in
   # the data it needs to do its job. Each strategy should include this mixin
