@@ -62,7 +62,8 @@ module Debsecan
           dist: options.dist,
           release: options.release,
           arch: pkg['Architecture'],
-          source: pkg['Source']
+          source: pkg['Source'],
+          multiarch: pkg['Multi-Arch']
         )
       end
     end

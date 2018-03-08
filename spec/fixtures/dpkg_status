@@ -63,3 +63,11 @@ Version: 0.74-1+b1
 Depends: perl (>= 5.14.2-3), perlapi-5.14.2, libc6 (>= 2.4)
 Description: helper module for FastCGI
 Homepage: http://search.cpan.org/dist/FCGI/
+
+Package: libquadmath0
+Status: install ok installed
+Architecture: amd64
+Multi-Arch: same
+Source: gcc-4.9
+Version: 4.9.2-10
+Description: GCC Quad-Precision Math Library

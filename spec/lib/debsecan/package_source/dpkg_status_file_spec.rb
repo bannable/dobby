@@ -13,8 +13,8 @@ RSpec.describe Debsecan::PackageSource::DpkgStatusFile do
   subject { packages }
 
   describe '#parse' do
-    it 'creates 6 packages' do
-      expect(subject.count).to eq(6)
+    it 'creates 7 packages' do
+      expect(subject.count).to eq(7)
       subject.each do |p|
         expect(p).to be_a(Debsecan::Package)
       end

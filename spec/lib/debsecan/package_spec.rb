@@ -28,9 +28,41 @@ RSpec.describe Debsecan::Package do
       expect(subject.version).to eq('2.13-38+deb7u10')
       expect(subject.release).to eq('test')
     end
+  end
 
-    it 'has a string representation' do
-      expect(subject.to_s).to eq('locales-all 2.13-38+deb7u10')
+  describe '#apt_name' do
+    context 'when multiarch is not same' do
+      it 'has a string representation' do
+        expect(subject.to_s).to eq('locales-all 2.13-38+deb7u10')
+      end
+
+      it 'does not include the arch' do
+        expect(subject.apt_name).to eq('locales-all')
+      end
+    end
+
+    context 'when multiarch is same' do
+      before(:each) do
+        package_args[:multiarch] = 'same'
+        package_args[:arch] = 'foobar'
+      end
+
+      it 'raises a FieldRequiredError if arch is nil' do
+        package_args[:arch] = nil
+        expect { subject }.to raise_error do |error|
+          expect(error).to be_a(Debsecan::Package::FieldRequiredError)
+          expect(error.field).to eq('arch')
+          expect(error.message).to eq("Missing required field 'arch'")
+        end
+      end
+
+      it 'includes the arch' do
+        expect(subject.apt_name).to eq('locales-all:foobar')
+      end
+
+      it 'has a string representation' do
+        expect(subject.to_s).to eq('locales-all:foobar 2.13-38+deb7u10')
+      end
     end
   end
 

@@ -27,6 +27,7 @@ module Debsecan
     attr_reader :dist
     attr_reader :arch
     attr_reader :target
+    attr_reader :multiarch
 
     # Set up a new Debian Package
     #
@@ -35,10 +36,12 @@ module Debsecan
     # @param source [String] Name of the source package, if applicable
     #
     # @raise [FieldRequiredError] if initialized without name or version
-    def initialize(name:, version:, release:, dist: nil, arch: nil, source: nil, target: nil)
+    def initialize(name:, version:, release:, dist: nil, arch: nil, source: nil,
+                   target: nil, multiarch: nil)
       raise FieldRequiredError, 'name' unless name
       raise FieldRequiredError, 'version' unless version
       raise FieldRequiredError, 'release' unless release
+      raise FieldRequiredError, 'arch' if arch.nil? && multiarch == 'same'
 
       @name = name
       @version = version
@@ -47,11 +50,20 @@ module Debsecan
       @release = release
       @arch = arch
       @target = target
+      @multiarch = multiarch
+    end
+
+    # When a package has multiarch set to same, dpkg and apt will know of it by
+    # a name such as 'libquadmath0:amd64' instead of 'libquadmath0'. In these cases,
+    # return the name alongside the architecture to make it easier to act on results.
+    def apt_name
+      return name unless multiarch == 'same'
+      "#{name}:#{arch}"
     end
 
     # @return [String] String representation of the package.
     def to_s
-      "#{@name} #{@version}"
+      "#{apt_name} #{version}"
     end
 
     # @param version [Package]
