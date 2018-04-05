@@ -9,9 +9,11 @@ module Debsecan
     # Vulnerability database source for Debian systems. This uses the JSON file
     # provided by the Debian Security Tracker as its' remote source.
     class Debian < AbstractVulnSource
+      DEFAULT_RELEASE = 'jessie'
+
       args %i[releases source url_prefix]
 
-      option :releases, [WHEEZY]
+      option :releases, [DEFAULT_RELEASE]
       option :source, 'https://security-tracker.debian.org/tracker/data/json'
       option :url_prefix, 'https://security-tracker.debian.org/tracker/'
 

@@ -1,56 +1,51 @@
 # frozen_string_literal: true
 
 RSpec.describe Debsecan::Scanner do
-  let(:package) { double('Package', name: 'foo', version: 1, target: target, source: nil) }
-  let(:package_source) { double('Package', name: 'bar', version: 1, target: target, source: 'baz') }
+  let(:package) do
+    instance_double('Package',
+                    name: 'foo',
+                    version: 1,
+                    target: target,
+                    source: nil,
+                    release: 'a',
+                    filtered?: package_filtered)
+  end
+
+  let(:package_source) do
+    instance_double('Package',
+                    name: 'bar',
+                    version: 1,
+                    target: target,
+                    source: 'baz',
+                    release: 'a',
+                    filtered?: package_source_filtered)
+  end
+
   let(:packages) { [package] }
 
-  let(:db) { double('Debsecan::Database') }
-  let(:defect) { double('Debsecan::Defect', identifier: 'one', fix_available?: true) }
+  let(:defect) do
+    instance_double('Debsecan::Defect',
+                    identifier: 'one',
+                    fix_available?: true,
+                    fixed_in: fixed_in,
+                    filtered?: default_filtered)
+  end
+
+  let(:filtered) { false }
+  let(:package_filtered) { filtered }
+  let(:package_source_filtered) { filtered }
+  let(:default_filtered) { filtered }
+
+  let(:db) { instance_double('Debsecan::Database', defects_for: defects) }
 
   let(:scanner) { Debsecan::Scanner.new(packages, db) }
 
-  let(:whitelisted_defect) do
-    double('Debsecan::Defect', identifier: 'FAKE-VULN-1')
-  end
-
-  let(:allowed_defect) do
-    double('Debsecan::Defect', identifier: 'FAKE-VULN-2')
-  end
-
-  let(:flags) do
-    {
-      whitelist: {
-        'FAKE-VULN-1' => {
-          reason: 'Lorum',
-          by: 'Ipsum',
-          on: 'Dolor'
-        }
-      },
-      allowed: {
-        'FAKE-VULN-2' => {
-          reason: 'Lorum',
-          by: 'Ipsum',
-          on: 'Dolor'
-        }
-      }
-    }
-  end
-
   let(:filter) { :default }
-  let(:only_fixed) { false }
-  let(:scan_args) { { filter: filter, only_fixed: only_fixed } }
-  let(:release_matches) { true }
+  let(:flag_filter) { :default }
+  let(:scan_args) { { defect_filter: filter, flag_filter: flag_filter } }
   let(:fixed_in) { [package] }
   let(:defects) { [defect] }
   let(:target) { double('target') }
-
-  before(:each) do
-    allow(db).to receive(:defects_for).and_return(defects)
-    allow(package).to receive(:release) { release_matches }
-    allow(defect).to receive(:fixed_in) { fixed_in }
-    allow(Psych).to receive(:load_file).and_return(flags)
-  end
 
   shared_examples_for 'reports the defect' do
     it 'reports the expected package-defect Hash' do
@@ -69,10 +64,7 @@ RSpec.describe Debsecan::Scanner do
 
   describe '#scan' do
     let(:vulnerable) { true }
-
-    before(:each) do
-      allow(package).to receive(:<) { vulnerable }
-    end
+    let(:filtered?) { false }
 
     subject { scanner.scan(scan_args) }
 
@@ -82,18 +74,12 @@ RSpec.describe Debsecan::Scanner do
         include_examples 'reports the defect'
       end
 
-      context 'only_fixed is false' do
-        include_examples 'reports the defect'
-      end
-
-      context 'only_fixed is true' do
-        let(:only_fixed) { true }
-
+      context 'with :only_fixed filter' do
         context 'and the defect is fixed' do
           include_examples 'reports the defect'
         end
 
-        context 'the defect is not fixed' do
+        context 'and the defect is not fixed' do
           let(:fixed_in) { [] }
           include_examples 'does not report the defect'
         end
@@ -105,12 +91,25 @@ RSpec.describe Debsecan::Scanner do
       include_examples 'does not report the defect'
     end
 
-    describe 'filter' do
-      before do
-        allow(whitelisted_defect).to receive(:fixed_in) { fixed_in }
-        allow(allowed_defect).to receive(:fixed_in) { fixed_in }
+    describe 'filtered results' do
+      let(:whitelisted_defect) do
+        instance_double('Debsecan::Defect',
+                        identifier: 'FAKE-VULN-1',
+                        fixed_in: fixed_in,
+                        filtered?: whitelist_filtered)
       end
 
+      let(:allowed_defect) do
+        instance_double('Debsecan::Defect',
+                        identifier: 'FAKE-VULN-2',
+                        fixed_in: fixed_in,
+                        filtered?: allowed_filtered)
+      end
+
+      let(:filtered) { true }
+      let(:whitelist_filtered) { filtered }
+      let(:allowed_filtered) { filtered }
+      let(:package_filtered) { false }
       let(:defects) { [defect, whitelisted_defect, allowed_defect] }
 
       shared_examples_for 'filtered results' do |expect_result|
@@ -121,63 +120,31 @@ RSpec.describe Debsecan::Scanner do
       end
 
       context 'is :default' do
-        let(:filter) { :default }
-
+        let(:default_filtered) { false }
         include_examples 'filtered results', 'one'
       end
 
       context 'is :allowed' do
-        let(:filter) { :allowed }
+        let(:allowed_filtered) { false }
+        let(:flag_filter) { :allowed }
 
         include_examples 'filtered results', 'FAKE-VULN-2'
       end
 
       context 'is :whitelisted' do
-        let(:filter) { :whitelisted }
+        let(:whitelist_filtered) { false }
+        let(:flag_filter) { :whitelisted }
 
         include_examples 'filtered results', 'FAKE-VULN-1'
       end
     end
   end
 
-  describe '#fixed_by_target' do
-    let(:not_affected) { false }
-    let(:compare_result) { true }
-
-    subject { scanner.fixed_by_target }
+  describe '#scan_by_target' do
+    subject { scanner.scan_by_target }
 
     context 'package has defects' do
-      before(:each) do
-        allow(package).to receive(:>=) { not_affected }
-        allow(package).to receive(:target_at_least?) { compare_result }
-      end
-
-      context 'and refers to a source that is not known' do
-        let(:package) { package_source }
-        include_examples 'reports the defect'
-      end
-
-      context 'but no target version' do
-        let(:target) { nil }
-
-        include_examples 'does not report the defect'
-      end
-
-      context 'fixed in the target version' do
-        include_examples 'reports the defect'
-      end
-
-      context 'fixed in an earlier version' do
-        let(:not_affected) { true }
-
-        include_examples 'does not report the defect'
-      end
-
-      context 'fixed after the target version' do
-        let(:compare_result) { false }
-
-        include_examples 'does not report the defect'
-      end
+      include_examples 'reports the defect'
     end
 
     context 'package has no defects' do

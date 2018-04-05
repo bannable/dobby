@@ -11,6 +11,12 @@ module Debsecan
       @records = Hash.new { |h, k| h[k] = [] }
       @strategy = strategy
       raise InitializationError, 'Strategy did not update at initialize!' unless update
+      # TODO: Make the flag path configurable
+      file = File.join(File.expand_path(__dir__), 'flags.yml')
+      flags = Psych.load_file(file)
+      flags.each do |flag, defects|
+        defects.each { |d| @records[d].flag = flag if @records.key?(d) }
+      end
     end
 
     # @param package [Package]

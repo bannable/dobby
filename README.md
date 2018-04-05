@@ -21,8 +21,8 @@ a package set from `/var/lib/dpkg/status`, but can read and parase any similarly
 formatted file.
 
 For vulnerability information source, two strategies are included:
-* `VulnSrcDebian`: Retrieve CVE/etc information from the Debian Security Tracker.
-* `VulnSrcUbuntu`: Checkout and parse the Ubuntu Security Tracker using bzr.
+* `VulnSource::Debian`: Retrieve CVE/etc information from the Debian Security Tracker.
+* `VulnSource::Ubuntu`: Checkout and parse the Ubuntu Security Tracker using bzr.
 
 Initializing the vulnerability database can be expensive in time, bandwidth
 and space. It is recommended that you initialize only a single vulnerability

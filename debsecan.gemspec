@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'debsecan/version'
+require File.expand_path('lib/debsecan/version', __dir__)
 
 # rubocop:disable Metrics/BlockLength
 Gem::Specification.new do |spec|
@@ -32,13 +30,14 @@ Gem::Specification.new do |spec|
   spec.files = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(spec|features)/})
   end
-  spec.bindir        = 'exe'
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.bindir        = 'bin'
+  spec.executables   = 'debsecan'
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'awesome_print', '~> 1.8'
   spec.add_development_dependency 'bundler', '~> 1.16'
-  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'pry'
+  spec.add_development_dependency 'rake', '~> 12.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 0.52'
   spec.add_development_dependency 'timecop', '~> 0.9'

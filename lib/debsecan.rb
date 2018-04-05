@@ -31,6 +31,7 @@ module Debsecan
   end
 
   class DebsecanError < StandardError; end
+  class UnknownFilterError < DebsecanError; end
 
   # A generic response format.
   class UpdateResponse
@@ -66,7 +67,4 @@ module Debsecan
   def self.logger
     config.logger
   end
-
-  WHEEZY = 'wheezy'.freeze
-  XENIAL = 'xenial'.freeze
 end

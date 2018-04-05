@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Debsecan::VulnSource::Ubuntu do
-  let(:test_data_path) { [File.join('./spec/fixtures', 'ubuntu_test_data.txt')] }
+  let(:test_data_path) { [File.join('.', 'spec', 'fixtures', 'ubuntu_test_data.txt')] }
   let(:repo_path) { '/tmp/ubuntu_vuln_src_test' }
   let(:src) do
     Debsecan::VulnSource::Ubuntu.new(

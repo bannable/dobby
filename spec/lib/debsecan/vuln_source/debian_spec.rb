@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Debsecan::VulnSource::Debian do
-  let(:test_data) { File.read(File.join('./spec/fixtures', 'debian_vuln_src.json')) }
+  let(:test_data) { File.read(File.join('.', 'spec', 'fixtures', 'debian_vuln_src.json')) }
   let(:src) { Debsecan::VulnSource::Debian.new(releases: %w[wheezy jessie sid]) }
 
   subject { src }

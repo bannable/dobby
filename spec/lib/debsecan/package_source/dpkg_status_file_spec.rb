@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Debsecan::PackageSource::DpkgStatusFile do
-  let(:status_file) { File.join('./spec/fixtures', 'dpkg_status') }
+  let(:status_file) { File.join('spec', 'fixtures', 'dpkg_status') }
   let(:strategy) do
     Debsecan::PackageSource::DpkgStatusFile.new(
       file_path: status_file,

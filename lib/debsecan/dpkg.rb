@@ -4,9 +4,9 @@ module Debsecan
   # Generic Debian dpkg helper methods
   module Dpkg
     # Default location of the dpkg binary
-    DPKG = '/usr/bin/dpkg'.freeze
+    DPKG = '/usr/bin/dpkg'
     # Default location of the lsb_release binary
-    LSBR = '/usr/bin/lsb_release'.freeze
+    LSBR = '/usr/bin/lsb_release'
 
     # @return [String] Debian codename for this system
     def self.code_name

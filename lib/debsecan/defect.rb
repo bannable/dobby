@@ -19,6 +19,8 @@ module Debsecan
 
     attr_reader :link
 
+    attr_accessor :flag
+
     # @param identifier [String]
     # @param description [String]
     # @param severity [Severity]
@@ -37,6 +39,23 @@ module Debsecan
     # @return [Boolean]
     def fix_available?
       fixed_in.any? { |v| v.version != Package::MAX_VERSION }
+    end
+
+    def filtered?(filter: :default, flag_filter: :default)
+      return true if flag_filtered?(flag_filter)
+      return false if filter == :default
+      return !fix_available? if filter == :only_fixed
+      raise UnknownFilterError, filter
+    end
+
+    def flagged?
+      !flag.nil?
+    end
+
+    def flag_filtered?(filter)
+      return !flag.nil? if filter == :default
+      return false if flag == filter
+      true
     end
   end
 end

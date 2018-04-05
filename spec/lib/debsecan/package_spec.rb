@@ -4,7 +4,8 @@ RSpec.describe Debsecan::Package do
   let(:package_args) do
     {
       name:    'locales-all',
-      version: '2.13-38+deb7u10',
+      version: package_version,
+      target:  target_version,
       release: 'test'
     }
   end
@@ -12,10 +13,15 @@ RSpec.describe Debsecan::Package do
   let(:newer_package_args) do
     {
       name:    'locales-all',
-      version: '2.13-38+deb7u11',
-      release: 'test'
+      version: newer_version,
+      release: new_rel
     }
   end
+
+  let(:package_version) { '2.13-38+deb7u10' }
+  let(:newer_version) { '2.13-38+deb7u12' }
+  let(:target_version) { package_version }
+  let(:new_rel) { 'test' }
 
   let(:package) { Debsecan::Package.new(package_args) }
   let(:newer_package) { Debsecan::Package.new(newer_package_args) }
@@ -62,6 +68,59 @@ RSpec.describe Debsecan::Package do
 
       it 'has a string representation' do
         expect(subject.to_s).to eq('locales-all:foobar 2.13-38+deb7u10')
+      end
+    end
+  end
+
+  describe '#filtered?' do
+    subject { package.filtered?(newer_package, filter) }
+
+    context ':default filter' do
+      let(:filter) { :default }
+
+      context 'the package and other releases match' do
+        context 'version is less than other version' do
+          it { is_expected.to be false }
+        end
+
+        context 'version is equal to other version' do
+          let(:package_version) { newer_version }
+          it { is_expected.to be true }
+        end
+        context 'version is greater than other version' do
+          let(:package_version) { '3' }
+          it { is_expected.to be true }
+        end
+      end
+
+      context 'the package and other releases do not match' do
+        let(:new_rel) { 'foo' }
+
+        it { is_expected.to be true }
+      end
+    end
+
+    context ':target filter' do
+      let(:filter) { :target }
+      context 'the package and other releases do not match' do
+        let(:new_rel) { 'foo' }
+        it { is_expected.to be true }
+      end
+
+      context 'package and other releases match' do
+        context 'target is at least the fix version' do
+          let(:target_version) { newer_version }
+          it { is_expected.to be true }
+        end
+
+        context 'target is not at least the fix version' do
+          it { is_expected.to be false }
+        end
+
+        context 'version is >= fix version' do
+          let(:package_version) { newer_version }
+          it { is_expected.to be true }
+        end
       end
     end
   end

@@ -9,9 +9,10 @@ module Debsecan
     # @note This requires bazaar to be installed at /usr/bin/bzar unless
     #   configured with a different path via the bzr option.
     class Ubuntu < AbstractVulnSource
+      DEFAULT_RELEASE = 'xenial'
       args %i[releases local_repo_path url_prefix bzr tracker_uri tracker_repo]
 
-      option :releases, [XENIAL]
+      option :releases, [DEFAULT_RELEASE]
 
       # The actual repository
       option :bzr, '/usr/bin/bzr'
