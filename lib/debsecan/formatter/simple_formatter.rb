@@ -2,7 +2,7 @@
 
 module Debsecan
   module Formatter
-    # Outputs simple text, possibly colored, to stdout.
+    # Outputs simple text, possibly colored
     class SimpleFormatter < AbstractFormatter
       include Colorizable
 

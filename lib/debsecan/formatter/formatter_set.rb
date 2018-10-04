@@ -6,8 +6,7 @@ module Debsecan
     class FormatterSet < Array
       BUILTIN_FORMATTERS = {
         'simple' => SimpleFormatter,
-        # 'json' => JSONFormatter,
-        # 'serialized' => SerializedFormatter
+        'json' => JSONFormatter
       }.freeze
 
       FORMATTER_APIS = %i[started finished file_started].freeze

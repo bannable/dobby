@@ -21,6 +21,17 @@ module Debsecan
 
     attr_accessor :flag
 
+    # Simple hash serializer for a Defect
+    # @return [Hash]
+    def to_hash
+      {
+        identifier: identifier,
+        description: description,
+        severity: severity.to_s,
+        fixed_in: fixed_in.map(&:to_s)
+      }
+    end
+
     # @param identifier [String]
     # @param description [String]
     # @param severity [Severity]

@@ -72,7 +72,14 @@ RSpec.describe Debsecan::CLI do
           expect($stdout.string).to include('CVE-2003-0779')
         end
 
-        it 'outputs with json format'
+        it 'outputs with json format' do
+          cli.run(['--format', 'json'] | options)
+          expect { Oj.load($stdout.string) }.not_to raise_error(Oj::ParseError)
+          expect($stdout.string).to include('"package":"asterisk"')
+          expect($stdout.string).to include('"version":"0.5.55"')
+          expect($stdout.string).to include('"defects":[{"identifier":"CVE-2003-0779"')
+          expect($stdout.string).to include('"fixed_in":["asterisk 0.5.56"]}]}]}')
+        end
       end
 
       describe 'custom formatter' do

@@ -40,6 +40,7 @@ require_relative 'debsecan/vuln_source/ubuntu'
 require_relative 'debsecan/formatter/colorizable'
 require_relative 'debsecan/formatter/abstract_formatter'
 require_relative 'debsecan/formatter/simple_formatter'
+require_relative 'debsecan/formatter/json_formatter'
 require_relative 'debsecan/formatter/formatter_set'
 
 require_relative 'debsecan/scanner'
