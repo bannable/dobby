@@ -6,26 +6,10 @@ module Debsecan
     class SimpleFormatter < AbstractFormatter
       include Colorizable
 
-      # def started(target_files)
-      #   output.puts '------ Starting'
-      #   pp target_files
-      #   output.puts '------'
-      # end
-
-      # def file_started(file)
-      #   output.puts "Started - #{file}"
-      # end
-
       def file_finished(_file, results)
         return if results.empty?
         each_completed_result(results)
       end
-
-      # def finished(files)
-      #   output.puts '------ Done'
-      #   output.puts files
-      #   output.puts '------'
-      # end
 
       private
 

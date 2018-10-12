@@ -19,7 +19,7 @@ RSpec.describe Debsecan::Runner do
     let(:options) do
       {
         formatters: [['simple', formatter_output_path]],
-        file: File.join(__dir__, '..', 'fixtures', 'debian_vuln_src.json')
+        vuln_source_file: File.join(__dir__, '..', 'fixtures', 'debian_vuln_src.json')
       }
     end
 

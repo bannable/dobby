@@ -47,32 +47,16 @@ module Debsecan
     def define_options
       OptionParser.new do |opts|
         opts.program_name = 'meraki-debsecan'
-        opts.banner = 'Usage: debsecan [options] [file1, file2, ...]'
+        opts.banner = <<-BANNER.strip_indent
+          Usage: debsecan [options] [file1, file2, ...]
+                 debsecan -o file [file1, file2, ...]
+                 debsecan -f simple -f json -o bar [file1, file2, ...]
+
+        BANNER
 
         add_boolean_options(opts)
         add_formatting_options(opts)
         add_configuration_options(opts)
-
-        # opts.on('r', 'remove', Array(OptionsHelp::TEXT[:remove])) { @options[:action] = :remove }
-        # opts.on('a', 'add', Array(OptionsHelp::TEXT[:add])) { @options[:action] = :add }
-        # opts.on('m', 'move', Array(OptionsHelp::TEXT[:move])) { @options[:action] = :move }
-        # # opts.on('s', 'scan'....)
-        # # option(opts, '-r', '--remove') { @options[:action] = :remove }
-        # # option(opts, '-a', '--add') { @options[:action] = :add }
-        # # option(opts, '-m', '--move') { @options[:action] = :move }
-
-        # option(opts, '-i', '--id ID1,ID2,...', Array)
-        # option(opts, '-f', '--flag FLAG', String) { |_f| @options[:flag] ||= 'allowed' }
-        # option(opts, '-t', '--target DESTINATION', String)
-        # option(opts, '-j', '--ticket TICKET', String)
-
-        # # option(opts, 'flag') do
-        # #   options[:command] = :flag
-        # # end
-        # #
-        # # option(opts, 'scan') do
-        # #   options[:command] = :scan
-        # # end
       end
     end
 
@@ -111,9 +95,9 @@ module Debsecan
     end
 
     def add_boolean_options(opts)
+      option(opts, '--debug')
       option(opts, '--fail-fast')
       option(opts, '--list-target-files')
-      option(opts, '--debug')
       option(opts, '-v', '--version')
       option(opts, '-V', '--verbose-version')
       option(opts, '--[no-]color')
@@ -121,7 +105,9 @@ module Debsecan
     end
 
     def add_configuration_options(opts)
-      option(opts, '--file FILE', String)
+      option(opts, '-P', '--package-source PACKAGE-SOURCE')
+      option(opts, '-s', '--vuln-source-file FILE')
+      option(opts, '-S', '--vuln-source VULN-SOURCE')
     end
   end
 
@@ -131,9 +117,27 @@ module Debsecan
       format:               ['Choose an output formatter. This option',
                              'can be specified multiple times to enable',
                              'multiple formatters at the same time.',
-                             '  [p]rogress (default)',
-                             '  [s]imple',
+                             '  [s]imple (default)',
+                             '  [j]son',
                              '  custom formatter class name'],
+      fail_fast:             'Exit as soon as a defect is discovered.',
+      fixed_only:           ['Only report vulnerabilities which have a fix',
+                             'version noted in the vulnerability source.'],
+      list_target_files:    ['List the package source files that would be inspected',
+                             'and then exit.'],
+      out:                  ['Use with --format to instruct the previous formatter',
+                             'to output to the specified path instead of to stdout.'],
+      package_source:       ['Choose a package source.',
+                             '  [d]pkg (default)',
+                             '  custom package source class name'],
+      vuln_source:          ['Choose a vulnerability source.',
+                             '  [d]ebian (default)',
+                             '  custom vulnerability source class name'],
+      vuln_source_file:     ['Specify a local file to be used by the vulnerability',
+                             'source instead of using the default behavior. For',
+                             'Debian and Ubuntu, the default behavior is to fetch',
+                             'the source from their respective security trackers.',
+                             'Warning: Not compatible with Ubuntu source'],
       version:               'Display version.',
       verbose_version:       'Display verbose verison.'
     }.freeze

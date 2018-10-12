@@ -35,6 +35,7 @@ module Debsecan
 
     def act_on_options
       handle_exiting_options
+      # TODO: handle incompatible options (ubuntu source with source file specified)
 
       if @options[:color]
         Rainbow.enabled = true

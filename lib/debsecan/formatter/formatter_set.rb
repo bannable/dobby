@@ -58,17 +58,14 @@ module Debsecan
       end
 
       def builtin_formatter_class(specified_key)
-        matching_keys = BUILTIN_FORMATTERS.keys.select do |key|
+        matching = BUILTIN_FORMATTERS.keys.select do |key|
           key.start_with?(specified_key)
         end
 
-        raise %(No formatter for "#{specified_key}") if matching_keys.empty?
+        raise %(No formatter for "#{specified_key}") if matching.empty?
+        raise %(Cannot determine formatter for "#{specified_key}") if matching.size > 1
 
-        if matching_keys.size > 1
-          raise %(Cannot determine formatter for "#{specified_key}")
-        end
-
-        BUILTIN_FORMATTERS[matching_keys.first]
+        BUILTIN_FORMATTERS[matching.first]
       end
 
       def custom_formatter_class(specified_class_name)

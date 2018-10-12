@@ -11,7 +11,7 @@ RSpec.describe Debsecan::CLI do
 
   let(:options) do
     %W[
-      --file
+      --vuln-source-file
       #{source_json}
       #{status_file}
     ]
