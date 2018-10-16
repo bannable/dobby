@@ -105,7 +105,7 @@ module Dobby
     # @param other [Package]
     # @return [Boolean] True if self === other and self.version is less than other.version
     def <(other)
-      self === other && compare_to(other.version).negative?
+      self === other && compare_to(other.version) < 0
     end
 
     # @param other [Package]
@@ -131,7 +131,7 @@ module Dobby
     # @param other [Package]
     # @return [Boolean] True if self === other and self.version is greater than other.version
     def >(other)
-      self === other && compare_to(other.version).positive?
+      self === other && compare_to(other.version) > 0
     end
 
     # @param other [Package]

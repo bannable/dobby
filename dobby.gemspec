@@ -35,17 +35,17 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 12.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 0.52'
-  spec.add_development_dependency 'simplecov'
+  spec.add_development_dependency 'simplecov', '~> 0'
   spec.add_development_dependency 'timecop', '~> 0.9'
 
   spec.add_runtime_dependency 'apt-pkg', ['~> 0.4', '>= 0.2']
   spec.add_runtime_dependency 'curb', '~> 0.9'
   spec.add_runtime_dependency 'hashie', '~> 3.5'
-  spec.add_runtime_dependency 'oj'
+  spec.add_runtime_dependency 'oj', '~> 3'
   spec.add_runtime_dependency 'parallel', '~> 1.12'
   spec.add_runtime_dependency 'powerpack', '~> 0.1'
-  spec.add_runtime_dependency 'pry'
-  spec.add_runtime_dependency 'pry-byebug'
+  spec.add_runtime_dependency 'pry', '~> 0'
+  spec.add_runtime_dependency 'pry-byebug', '~> 3'
   spec.add_runtime_dependency 'rainbow', '~> 3'
   spec.add_runtime_dependency 'yard', '~> 0.9.16'
 

@@ -21,7 +21,7 @@ RSpec.describe Dobby::Options do
       end
 
       it 'shows help text' do
-        expected_help = <<~HELP
+        expected_help = <<-HELP.strip_indent
           Usage: dobby [options] [file1, file2, ...]
                  dobby -o file [file1, file2, ...]
                  dobby -f simple -f json -o bar [file1, file2, ...]
