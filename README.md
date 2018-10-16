@@ -1,4 +1,4 @@
-# Debsecan
+# Dobby
 
 Static analyzer library for DPKG-versioned packages.
 
@@ -31,15 +31,15 @@ database for processing multiple package sets.
 ## Usage
 
 ```ruby
-require 'debsecan'
+require 'dobby'
 package_set = []
 [file1, file2].each do |f|
-  package_set << Debsecan::PackageSource::DpkgStatusFile.new(file_path: f)
+  package_set << Dobby::PackageSource::DpkgStatusFile.new(file_path: f)
 end
 
-strategy = Debsecan::VulnSource::Debian.new
-database = Debsecan::Database.new(strategy)
-scanner = Debsecan::Scanner.new(nil, database)
+strategy = Dobby::VulnSource::Debian.new
+database = Dobby::Database.new(strategy)
+scanner = Dobby::Scanner.new(nil, database)
 
 package_set.each do |package_source|
   packages = package_source.parse
@@ -50,7 +50,7 @@ end
 
 ## Compatibility
 
-Debsecan supports the following Ruby implementations:
+Dobby supports the following Ruby implementations:
 
 * MRI 2.2+
 

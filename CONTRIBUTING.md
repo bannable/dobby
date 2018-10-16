@@ -13,7 +13,7 @@ do so.
 * Be clear, concise and precise in your description of the problem.
 * Open an issue with a descriptive title and a summary in grammatically correct,
   complete sentences.
-* Include the gem version, `Debsecan::VERSION`.
+* Include the gem version, `Dobby::VERSION`.
 * Include any relevant code to the issue summary.
 
 ## Pull requests
@@ -52,7 +52,7 @@ Here is an example:
 * At the end of the entry, add an implicit link to your GitHub user page as `([@username][])`.
 * If this is your first contribution to RuboCop project, add a link definition for the implicit link to the bottom of the changelog as `[@username]: https://github.com/username`.
 
-[1]: https://github.com/meraki/debsecan/issues
+[1]: https://github.com/meraki/dobby/issues
 [2]: http://gun.io/blog/how-to-github-fork-branch-and-pull-request
 [3]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 [4]: https://help.github.com/articles/using-pull-requests

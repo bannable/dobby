@@ -13,17 +13,17 @@ Metrics/LineLength:
 
 Metrics/ParameterLists:
   Exclude:
-    - 'lib/debsecan/package.rb'
+    - 'lib/dobby/package.rb'
 
 Style/CaseEquality:
   Exclude:
-    - 'lib/debsecan/package.rb'
-    - 'spec/lib/debsecan/package_spec.rb'
+    - 'lib/dobby/package.rb'
+    - 'spec/dobby/package_spec.rb'
 
 Style/NumericPredicate:
   Exclude:
     - 'spec/**/*'
-    - 'lib/debsecan/package.rb'
+    - 'lib/dobby/package.rb'
 
 Style/Documentation:
   Exclude:

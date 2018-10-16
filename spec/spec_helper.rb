@@ -5,9 +5,7 @@ Rainbow.enabled = false
 
 require 'support/coverage'
 
-require 'webmock/rspec'
-
-require 'debsecan'
+require 'dobby'
 
 Dir["#{__dir__}/support/**/*.rb"].each { |f| require f }
 
