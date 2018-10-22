@@ -30,6 +30,7 @@ database for processing multiple package sets.
 
 ## Usage
 
+As a gem:
 ```ruby
 require 'dobby'
 package_set = []
@@ -48,11 +49,40 @@ package_set.each do |package_source|
 end
 ```
 
+From the command line:
+```
+# Output issues for the current system as pretty text to stdout
+dobby /var/lib/dpkg/status
+
+# ... and also write issues as JSON to file.json
+dobby -f simple -f json -o file.json /var/lib/dpkg/status
+
+# Show issues for multiple files
+dobby file1 file2 file3
+```
+
+As a gem with a custom output formatter:
+```ruby
+# my_custom_executor.rb
+require 'dobby'
+require 'my/custom/formatter'
+
+cli = Dobby::CLI.new
+cli.run
+
+# CLI:
+my_custom_executor.rb -f My::Custom::Formatter /var/lib/dpkg/status
+```
+
 ## Compatibility
 
 Dobby supports the following Ruby implementations:
 
-* MRI 2.2+
+* MRI 2.2
+* MRI 2.3
+* MRI 2.4
+* MRI 2.5
+* MRI trunk
 
 ## Contributing
 
