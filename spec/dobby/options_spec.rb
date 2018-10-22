@@ -46,14 +46,25 @@ RSpec.describe Dobby::Options do
               -P PACKAGE-SOURCE,               Choose a package source.
                   --package-source               [d]pkg (default)
                                                  custom package source class name
-              -s, --vuln-source-file FILE      Specify a local file to be used by the vulnerability
-                                               source instead of using the default behavior. For
-                                               Debian and Ubuntu, the default behavior is to fetch
-                                               the source from their respective security trackers.
-                                               Warning: Not compatible with Ubuntu source
               -S, --vuln-source VULN-SOURCE    Choose a vulnerability source.
                                                  [d]ebian (default)
                                                  custom vulnerability source class name
+                  --release NAME               Release code name for package definitions.
+                                               Defaults to the code name of the current system.
+                  --dist DIST                  The full name of the distribution for package definitions.
+                                               Defaults to "Debian".
+                  --dst-json-uri URI           VulnSource::Debian -- specify a URI to the
+                                               Debian Security Tracker's JSON file.
+                  --dst-local-file PATH        VulnSource::Debian -- If provided, read from
+                                               the specified file instead of requesting the
+                                               DST json file from a remote.
+                  --releases ONE,TWO           Limit the packages returned by a VulnSource to
+                                               these releases. Default vaires with selected
+                                               VulnSource.
+                  --bzr-bin PATH               VulnSource::Ubuntu - Path to the "bzr" binary.
+                  --tracker-repo URI           VulnSource::Ubuntu - Path to the security tracker
+                                               bazaar repository remote.
+                  --cve-url-prefix URL         URI prefix used for building CVE links.
         HELP
 
         begin

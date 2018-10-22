@@ -9,16 +9,31 @@ module Dobby
     #   configured with a different path via the bzr option.
     class Ubuntu < AbstractVulnSource
       DEFAULT_RELEASE = 'xenial'
-      args %i[releases local_repo_path url_prefix bzr tracker_uri tracker_repo]
+      args %i[releases cve_url_prefix bzr_bin bzr_repo tracker_repo]
 
+      option :test_mode, false
       option :releases, [DEFAULT_RELEASE]
 
-      # The actual repository
-      option :bzr, '/usr/bin/bzr'
-      option :url_prefix, 'http://people.ubuntu.com/~ubuntu-security/cve/'
-      option :tracker_uri, 'https://launchpad.net/ubuntu-cve-tracker'
+      option :bzr_bin, '/usr/bin/bzr'
+      option :cve_url_prefix, 'http://people.ubuntu.com/~ubuntu-security/cve/'
       option :tracker_repo, 'https://launchpad.net/ubuntu-cve-tracker'
 
+      # rubocop:disable Layout/AlignArray
+      def self.cli_options
+        [
+          ['--releases ONE,TWO',   'Limit the packages returned by a VulnSource to',
+                                   'these releases. Default vaires with selected',
+                                   'VulnSource.'],
+          ['--bzr-bin PATH',       'VulnSource::Ubuntu - Path to the "bzr" binary.'],
+          # ['--bzr-repo PATH',      'Path to the Ubuntu Security bazaar repo on the',
+          #                          'local system.'],
+          ['--tracker-repo URI',   'VulnSource::Ubuntu - Path to the security tracker',
+                                   'bazaar repository remote.'],
+          ['--cve-url-prefix URL', 'URI prefix used for building CVE links.']
+        ]
+      end
+
+      # rubocop:enable Layout/AlignArray
       # Map of Canonical-provided urgencies to a common severity format
       URGENCY_MAP = Hash.new(Severity::Unknown).merge(
         'untriaged'  => Severity::Unknown,
@@ -47,9 +62,8 @@ module Dobby
         include Hashie::Extensions::DeepMerge
       end
 
-      def initialize(*args)
+      def setup
         @last_revno = nil
-        super
       end
 
       # Provide an UpdateReponse sourced from Canoncial's Ubuntu CVE Tracker
@@ -94,14 +108,14 @@ module Dobby
       def branch(path)
         FileUtils.mkdir_p path
         Dir.chdir(path) do
-          return system(options.bzr.to_s, 'branch', '--use-existing-dir',
+          return system(options.bzr_bin.to_s, 'branch', '--use-existing-dir',
                         options.tracker_repo.to_s, '.')
         end
       end
 
       def pull(path)
         Dir.chdir(path) do
-          return system(options.bzr.to_s, 'pull', '--overwrite')
+          return system(options.bzr_bin.to_s, 'pull', '--overwrite')
         end
       end
 
@@ -109,7 +123,7 @@ module Dobby
       #
       # @return [String]
       def bzr_revno
-        stdout, = Open3.capture2(options.bzr, 'revno', options.local_repo_path)
+        stdout, = Open3.capture2(options.bzr_bin, 'revno', options.local_repo_path)
         stdout.strip
       end
 
@@ -137,7 +151,7 @@ module Dobby
 
           if line.start_with?('Candidate:')
             identifier = line.split[1]
-            link = options.url_prefix + identifier
+            link = options.cve_url_prefix + identifier
             next
           elsif line.start_with?('Priority:')
             severity = URGENCY_MAP[line.split[1]]

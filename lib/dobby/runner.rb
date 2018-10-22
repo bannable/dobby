@@ -78,21 +78,14 @@ module Dobby
     end
 
     def load_scanner
-      vuln_source = if @options[:vuln_source_file]
-                      @vuln_source.new(
-                        test_mode: true,
-                        source: @options[:vuln_source_file]
-                      )
-                    else
-                      @vuln_source.new
-                    end
+      vuln_source = @vuln_source.new(@options)
       @database = Dobby::Database.new(vuln_source)
       @scanner = Scanner.new(nil, @database)
     end
 
     def process_file(file = nil)
       formatter_set.file_started(file)
-      source = @package_source.new(file_path: file)
+      source = @package_source.new(@options.merge(file_path: file))
       packages = source.parse
       results = run_scanner(packages)
       formatter_set.file_finished(file, results)
@@ -104,35 +97,26 @@ module Dobby
       @scanner.scan(defect_filter: Scanner::DEFECT_FILTER_FIXED)
     end
 
-    BUILTIN_PACKAGE_SOURCES = {
-      'dpkg' => PackageSource::DpkgStatusFile
-    }.freeze
-
-    BUILTIN_VULN_SOURCES = {
-      'debian' => VulnSource::Debian,
-      'ubuntu' => VulnSource::Ubuntu
-    }.freeze
-
     def fuzzy_source_name(key, sources)
       sources.keys.select { |k| k.start_with?(key) }
     end
 
     def builtin_package_source_class(specified)
-      matching = fuzzy_source_name(specified, BUILTIN_PACKAGE_SOURCES)
+      matching = fuzzy_source_name(specified, Builtins::PACKAGE_SOURCES)
 
       raise %(No package source for "#{specified}") if matching.empty?
       raise %(Ambiguous package source for "#{specified}") if matching.size > 1
 
-      BUILTIN_PACKAGE_SOURCES[matching.first]
+      Builtins::PACKAGE_SOURCES[matching.first]
     end
 
     def builtin_vuln_source_class(specified)
-      matching = fuzzy_source_name(specified, BUILTIN_VULN_SOURCES)
+      matching = fuzzy_source_name(specified, Builtins::VULN_SOURCES)
 
       raise %(No vulnerability source for "#{specified}") if matching.empty?
       raise %(Ambiguous vulnerability source for "#{specified}") if matching.size > 1
 
-      BUILTIN_VULN_SOURCES[matching.first]
+      Builtins::VULN_SOURCES[matching.first]
     end
 
     def vuln_source_loader(specifier)

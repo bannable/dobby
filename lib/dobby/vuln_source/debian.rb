@@ -7,12 +7,29 @@ module Dobby
     class Debian < AbstractVulnSource
       DEFAULT_RELEASE = 'jessie'
 
-      args %i[releases source url_prefix]
+      args %i[releases cve_url_prefix dst_json_uri dst_local_file]
 
       option :test_mode, false
       option :releases, [DEFAULT_RELEASE]
-      option :source, 'https://security-tracker.debian.org/tracker/data/json'
-      option :url_prefix, 'https://security-tracker.debian.org/tracker/'
+
+      option :dst_json_uri, 'https://security-tracker.debian.org/tracker/data/json'
+      option :cve_url_prefix, 'https://security-tracker.debian.org/tracker/'
+
+      # rubocop:disable Layout/AlignArray
+      def self.cli_options
+        [
+          ['--releases ONE,TWO',    'Limit the packages returned by a VulnSource to',
+                                    'these releases. Default varies with selected',
+                                    'VulnSource.'],
+          ['--dst-json-uri URI',    'VulnSource::Debian -- specify a URI to the',
+                                    "Debian Security Tracker's JSON file."],
+          ['--dst-local-file PATH', 'VulnSource::Debian -- If provided, read from',
+                                    'the specified file instead of requesting the',
+                                    'DST json file from a remote.'],
+          ['--cve-url-prefix URI',  'URI prefix used for building CVE links.']
+        ]
+      end
+      # rubocop:enable Layout/AlignArray
 
       # Map of DST-provided urgencies to a common severity format
       URGENCY_MAP = Hash.new(Severity::Unknown).merge(
@@ -51,9 +68,9 @@ module Dobby
       end
       ###
 
-      def initialize(*args)
+      # Initialize callback.
+      def setup
         @last_hash = nil
-        super
       end
 
       # Provide an UpdateResponse sourced from the Debian Security Tracker's
@@ -63,7 +80,7 @@ module Dobby
       #
       # @return [UpdateResponse]
       def update
-        data = fetch_from_remote(options.source)
+        data = fetch_from_remote(options.dst_json_uri)
 
         hash = Digest::SHA256.hexdigest(data)
         return UpdateResponse.new(false) if hash == @last_hash
@@ -103,7 +120,7 @@ module Dobby
               description: vuln['description'],
               severity: severity,
               fixed_in: fixed_versions,
-              link: options.url_prefix + identifier
+              link: options.cve_url_prefix + identifier
             )
           end
         end
@@ -136,7 +153,7 @@ module Dobby
       # @raise [BadResponseError] if url returns something other than 200
       # @raise [NoDataError] if url returns no data
       def fetch_from_remote(url)
-        return File.read(url) if options.test_mode
+        return File.read(options.dst_local_file) if options.dst_local_file
 
         curl = Curl::Easy.perform(url)
         raise BadResponseError, curl unless curl.response_code.to_i == 200

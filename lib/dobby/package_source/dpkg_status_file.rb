@@ -5,7 +5,7 @@ module Dobby
     # Defines a strategy for creating a {Package} array from /var/lib/dpkg/status
     # or a similarly formatted file.
     class DpkgStatusFile < AbstractPackageSource
-      args %(file_path dist release)
+      args %i[file_path dist release]
 
       option :file_path, '/var/lib/dpkg/status'
       option :dist, 'Debian'
@@ -13,6 +13,17 @@ module Dobby
 
       # A Dpkg section has unexpected formatting
       class DpkgFormatError < Error; end
+
+      # rubocop:disable Layout/AlignArray
+      def self.cli_options
+        [
+          ['--release NAME', 'Release code name for package definitions.',
+                             'Defaults to the code name of the current system.'],
+          ['--dist DIST', 'The full name of the distribution for package definitions.',
+                          'Defaults to "Debian".']
+        ]
+      end
+      # rubocop:enable Layout/AlignArray
 
       # @return [Array<Package>]
       def parse

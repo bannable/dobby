@@ -92,7 +92,8 @@ module Dobby
 
       # Sets (and retrieves) option key names for initializer arguments to be
       # recorded as. This takes care of 90% of the use cases for overriding
-      # the initializer in Dobby Strategies.
+      # the initializer in Dobby Strategies. Dobby::Options will also use
+      # this, via #cli_options, to configure any command line options.
       def args(args = nil)
         if args
           @args = Array(args)
@@ -104,6 +105,13 @@ module Dobby
                      []
                    end
         (instance_variable_defined?(:@args) && @args) || existing
+      end
+
+      # By default, all args are automatically built out as k/v CLI options. For
+      # more advanced behavior, override cli_options in the implementing class.
+      # The return of this method is passed directly to Dobby::Options#options
+      def cli_options
+        args.map { |arg| "--#{arg.to_s.tr('_', '-')} VALUE" }
       end
     end
 
@@ -128,8 +136,15 @@ module Dobby
 
       raise ArgumentError, "Received too many arguments. #{args.inspect}" unless args.empty?
 
+      setup
+
       yield options if block_given?
     end
+
+    # Callback placeholder so that 'super' during initialize is unnecessary in
+    # implementing classes. This is the other 10% of the use case for overriding
+    # initialize.
+    def setup; end
 
     # @return [String]
     def inspect

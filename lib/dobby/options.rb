@@ -57,6 +57,7 @@ module Dobby
         add_boolean_options(opts)
         add_formatting_options(opts)
         add_configuration_options(opts)
+        add_strategy_options(opts)
       end
     end
 
@@ -106,8 +107,15 @@ module Dobby
 
     def add_configuration_options(opts)
       option(opts, '-P', '--package-source PACKAGE-SOURCE')
-      option(opts, '-s', '--vuln-source-file FILE')
       option(opts, '-S', '--vuln-source VULN-SOURCE')
+    end
+
+    def add_strategy_options(opts)
+      Builtins::ALL.each do |strategy|
+        strategy.cli_options.each do |opt|
+          option(opts, *opt)
+        end
+      end
     end
   end
 
@@ -133,11 +141,6 @@ module Dobby
       vuln_source:          ['Choose a vulnerability source.',
                              '  [d]ebian (default)',
                              '  custom vulnerability source class name'],
-      vuln_source_file:     ['Specify a local file to be used by the vulnerability',
-                             'source instead of using the default behavior. For',
-                             'Debian and Ubuntu, the default behavior is to fetch',
-                             'the source from their respective security trackers.',
-                             'Warning: Not compatible with Ubuntu source'],
       version:               'Display version.',
       verbose_version:       'Display verbose verison.'
     }.freeze

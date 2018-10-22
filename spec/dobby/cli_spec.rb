@@ -11,7 +11,7 @@ RSpec.describe Dobby::CLI do
 
   let(:options) do
     %W[
-      --vuln-source-file
+      --dst-local-file
       #{source_json}
       #{status_file}
     ]

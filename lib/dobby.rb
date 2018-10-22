@@ -45,6 +45,7 @@ require_relative 'dobby/formatter/formatter_set'
 
 require_relative 'dobby/scanner'
 
+require_relative 'dobby/builtins'
 require_relative 'dobby/options'
 require_relative 'dobby/runner'
 require_relative 'dobby/cli'
