@@ -109,7 +109,8 @@ module Dobby
       #
       # @return [String]
       def bzr_revno
-        `#{options.bzr} revno #{options.local_repo_path}`.strip
+        stdout, = Open3.capture2(options.bzr, 'revno', options.local_repo_path)
+        stdout.strip
       end
 
       # Returns a list of all interesting files in the bazaar repository.
@@ -127,9 +128,7 @@ module Dobby
         fixed_versions = Hash.new { |h, k| h[k] = [] }
         severity = Severity::Unknown
 
-        identifier = nil
-        description = nil
-        link = nil
+        identifier = description = link = nil
         more = false
 
         file_lines.each do |line|

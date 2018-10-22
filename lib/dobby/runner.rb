@@ -113,10 +113,12 @@ module Dobby
       'ubuntu' => VulnSource::Ubuntu
     }.freeze
 
+    def fuzzy_source_name(key, sources)
+      sources.keys.select { |k| k.start_with?(key) }
+    end
+
     def builtin_package_source_class(specified)
-      matching = BUILTIN_PACKAGE_SOURCES.keys.select do |key|
-        key.start_with?(specified)
-      end
+      matching = fuzzy_source_name(specified, BUILTIN_PACKAGE_SOURCES)
 
       raise %(No package source for "#{specified}") if matching.empty?
       raise %(Ambiguous package source for "#{specified}") if matching.size > 1
@@ -124,11 +126,8 @@ module Dobby
       BUILTIN_PACKAGE_SOURCES[matching.first]
     end
 
-    # TODO: DRY
     def builtin_vuln_source_class(specified)
-      matching = BUILTIN_VULN_SOURCES.keys.select do |key|
-        key.start_with?(specified)
-      end
+      matching = fuzzy_source_name(specified, BUILTIN_VULN_SOURCES)
 
       raise %(No vulnerability source for "#{specified}") if matching.empty?
       raise %(Ambiguous vulnerability source for "#{specified}") if matching.size > 1
