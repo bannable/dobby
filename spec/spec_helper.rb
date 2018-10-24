@@ -3,6 +3,8 @@
 require 'rainbow'
 Rainbow.enabled = false
 
+require 'timecop'
+
 require 'support/coverage'
 
 require 'dobby'

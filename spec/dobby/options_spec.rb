@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 RSpec.describe Dobby::Options do
   subject(:options) { described_class.new }
 

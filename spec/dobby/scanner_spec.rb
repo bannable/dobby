@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 RSpec.describe Dobby::Scanner do
   let(:package) do
     instance_double('Package',

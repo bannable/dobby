@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 RSpec.describe Dobby::Defect do
   Fixed = Struct.new(:version)
   let(:fixed_package) { Fixed.new(1) }

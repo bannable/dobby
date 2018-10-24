@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 RSpec.describe Dobby::PackageSource::DpkgStatusFile do
   let(:status_file) { File.join('spec', 'fixtures', 'dpkg_status') }
   let(:strategy) do

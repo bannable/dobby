@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'timecop'
+
 RSpec.describe Dobby::FlagManager do
   let(:user1) { double('user1') }
   let(:user2) { double('user2') }

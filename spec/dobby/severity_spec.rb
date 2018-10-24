@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 RSpec.describe Dobby::Severity do
   context 'severities' do
     context 'comparisons' do

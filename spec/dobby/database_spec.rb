@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+
 RSpec.describe Dobby::Database do
   let(:strategy) { double('strategy') }
   let(:response) { double('response') }

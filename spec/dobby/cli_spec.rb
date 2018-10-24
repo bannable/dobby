@@ -1,5 +1,27 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
+module ExampleTestTool
+  class GenericFormatter < Dobby::Formatter::AbstractFormatter
+    def started(all_files)
+      output.puts "started: #{all_files.join(',')}"
+    end
+
+    def file_started(file)
+      output.puts "file_started: #{file}"
+    end
+
+    def file_finished(file, _offenses)
+      output.puts "file_finished: #{file}"
+    end
+
+    def finished(processed_files)
+      output.puts "finished: #{processed_files.join(',')}"
+    end
+  end
+end
+
 RSpec.describe Dobby::CLI do
   include_context 'cli context'
 
@@ -85,26 +107,6 @@ RSpec.describe Dobby::CLI do
       describe 'custom formatter' do
         context 'when specifying a class name' do
           it 'uses that class as a formatter' do
-            module ExampleTestTool
-              class GenericFormatter < Dobby::Formatter::AbstractFormatter
-                def started(all_files)
-                  output.puts "started: #{all_files.join(',')}"
-                end
-
-                def file_started(file)
-                  output.puts "file_started: #{file}"
-                end
-
-                def file_finished(file, _offenses)
-                  output.puts "file_finished: #{file}"
-                end
-
-                def finished(processed_files)
-                  output.puts "finished: #{processed_files.join(',')}"
-                end
-              end
-            end
-
             cli.run(['--format', 'ExampleTestTool::GenericFormatter'] | options)
             expect($stdout.string).to eq(<<-RESULT.strip_indent)
               started: #{status_file}
@@ -113,9 +115,14 @@ RSpec.describe Dobby::CLI do
               finished: #{status_file}
             RESULT
           end
-        end
 
-        context 'when an unknown class name is specified'
+          context 'which is undefined' do
+            it 'returns as an error' do
+              code = cli.run(['--format', 'This::Is::Fake'] | options)
+              expect(code).to eq(Dobby::CLI::STATUS_ERROR)
+            end
+          end
+        end
       end
     end
   end

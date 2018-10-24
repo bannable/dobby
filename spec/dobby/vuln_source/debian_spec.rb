@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 RSpec.describe Dobby::VulnSource::Debian do
   let(:test_data) { File.read(File.join('.', 'spec', 'fixtures', 'debian_vuln_src.json')) }
   let(:src) { Dobby::VulnSource::Debian.new(releases: %w[wheezy jessie sid]) }
