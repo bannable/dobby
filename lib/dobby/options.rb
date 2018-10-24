@@ -27,6 +27,7 @@ module Dobby
     def parse(cli_args)
       args = args_from_file.concat(args_from_env).concat(cli_args)
       define_options.parse!(args)
+      args << '/var/lib/dpkg/status' if args.empty?
       [@options, args]
     end
 

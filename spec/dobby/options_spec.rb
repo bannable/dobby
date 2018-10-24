@@ -75,4 +75,11 @@ RSpec.describe Dobby::Options do
       end
     end
   end
+
+  describe 'files' do
+    it 'uses /var/lib/dpkg/status by default' do
+      _, files = options.parse []
+      expect(files).to eq(['/var/lib/dpkg/status'])
+    end
+  end
 end
