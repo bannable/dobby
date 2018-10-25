@@ -84,6 +84,12 @@ Dobby supports the following Ruby implementations:
 * MRI 2.5
 * MRI trunk
 
+## Building
+
+```
+rake build
+```
+
 ## Contributing
 
 If you have found a bug or have a feature idea, take a look at the [contribution guidelines](CONTRIBUTING.md).
