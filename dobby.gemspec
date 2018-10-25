@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Dobby::Version::STRING
   spec.platform      = Gem::Platform::RUBY
   spec.authors       = ['Joe Truba']
-  spec.email         = ['jtruba@meraki.net', 'joe@bannable.net']
+  spec.email         = ['joe@bannable.net']
 
   spec.summary       = 'Vulnerability reporter for dpkg systems'
   spec.description   = <<-DESCRIPTION
@@ -17,15 +17,15 @@ Gem::Specification.new do |spec|
     which installed packages are impacted by which vulnerability defects, if any.
   DESCRIPTION
 
-  spec.homepage      = 'https://github.com/meraki/dobby/'
+  spec.homepage      = 'https://github.com/bannable/dobby'
   spec.license       = 'MIT'
 
   spec.required_ruby_version = ['~> 2', '>= 2.2']
 
   spec.metadata = {
-    'changelog_uri' => 'https://github.com/meraki/dobby/blob/master/CHANGELOG.md',
-    'source_code_uri' => 'https://github.com/meraki/dobby/',
-    'bug_tracker_uri' => 'https://github.com/meraki/dobby/issues'
+    'changelog_uri' => 'https://github.com/bannable/dobby/blob/master/CHANGELOG.md',
+    'source_code_uri' => 'https://github.com/bannable/dobby',
+    'bug_tracker_uri' => 'https://github.com/bannable/dobby/issues'
   }
 
   spec.bindir        = 'exe'
