@@ -3,7 +3,7 @@
 module Dobby
   # Dobby version information.
   module Version
-    STRING = '0.1.0'
+    STRING = '0.1.2'
     MSG = '%<version>s (AptPkg %<aptpkg_version>s Apt %<apt_version>s '\
           'libapt %<libapt_version>s) running on %<linux_version>s '\
           '%<ruby_engine>s %<ruby_version>s %<ruby_platform>s'
