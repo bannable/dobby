@@ -33,6 +33,8 @@ RSpec.describe Dobby::CLI do
 
   let(:options) do
     %W[
+      --release
+      jessie
       --dst-local-file
       #{source_json}
       #{status_file}
