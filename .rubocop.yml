@@ -25,6 +25,5 @@ Style/NumericPredicate:
     - 'spec/**/*'
     - 'lib/dobby/package.rb'
 
-Style/Documentation:
-  Exclude:
-    - 'spec/**/*'
+Layout/AlignHash:
+  Enabled: false

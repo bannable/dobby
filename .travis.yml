@@ -1,18 +1,33 @@
 sudo: false
 cache: bundler
+
 language: ruby
+
 rvm:
   - 2.2
   - 2.3
   - 2.4
   - 2.5
   - ruby-head
+
 before_install:
   - gem update --system
   - gem update --remote bundler
+  - sudo apt-get update
   - sudo apt-get install -y libapt-pkg-dev
-install:
-  - bundle install
-addons:
-  apt:
-    update: true
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+
+before_script:
+  - ./cc-test-reporter before-build
+
+script:
+  - bundle exec rake $TASKS
+
+after_script:
+  - ./cc-test-reporter after-build -t simplecov --exit-code $TRAVIS_TEST_RESULT
+
+env:
+  matrix:
+    - TASKS=rubocop
+    - TASKS=coverage
