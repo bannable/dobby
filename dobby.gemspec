@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
     'bug_tracker_uri' => 'https://github.com/bannable/dobby/issues'
   }
 
-  spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
+  spec.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
 
