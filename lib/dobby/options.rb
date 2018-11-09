@@ -77,6 +77,8 @@ module Dobby
     # e.g. [..., '--auto-correct', ...] to :auto_correct.
     def long_opt_symbol(args)
       long_opt = args.find { |arg| arg.start_with?('--') }
+      raise "unable to find long option from '#{args}'" unless long_opt
+
       long_opt[2..-1].sub('[no-]', '').sub(/ .*/, '')
                      .tr('-', '_').gsub(/[\[\]]/, '').to_sym
     end
