@@ -69,12 +69,12 @@ module Dobby
 
     def load_package_source(selected)
       selected ||= 'dpkg'
-      @package_source = package_source_loader(selected)
+      @package_source = load_source(selected, Builtins::PACKAGE_SOURCES)
     end
 
     def load_vuln_source(selected)
       selected ||= 'debian'
-      @vuln_source = vuln_source_loader(selected)
+      @vuln_source = load_source(selected, Builtins::VULN_SOURCES)
     end
 
     def load_scanner
@@ -101,43 +101,23 @@ module Dobby
       sources.keys.select { |k| k.start_with?(key) }
     end
 
-    def builtin_package_source_class(specified)
-      matching = fuzzy_source_name(specified, Builtins::PACKAGE_SOURCES)
+    def builtin_source_class(specified, class_list)
+      matching = fuzzy_source_name(specified, class_list)
 
-      raise %(No package source for "#{specified}") if matching.empty?
-      raise %(Ambiguous package source for "#{specified}") if matching.size > 1
+      raise %(No source for "#{specified}") if matching.empty?
+      raise %(Ambiguous source for "#{specified}") if matching.size > 1
 
-      Builtins::PACKAGE_SOURCES[matching.first]
+      class_list[matching.first]
     end
 
-    def builtin_vuln_source_class(specified)
-      matching = fuzzy_source_name(specified, Builtins::VULN_SOURCES)
-
-      raise %(No vulnerability source for "#{specified}") if matching.empty?
-      raise %(Ambiguous vulnerability source for "#{specified}") if matching.size > 1
-
-      Builtins::VULN_SOURCES[matching.first]
-    end
-
-    def vuln_source_loader(specifier)
+    def load_source(specifier, class_list)
       case specifier
       when Class
         specifier
       when /\A[A-Z]/
         custom_class(specifier)
       else
-        builtin_vuln_source_class(specifier)
-      end
-    end
-
-    def package_source_loader(specifier)
-      case specifier
-      when Class
-        specifier
-      when /\A[A-Z]/
-        custom_class(specifier)
-      else
-        builtin_package_source_class(specifier)
+        builtin_source_class(specifier, class_list)
       end
     end
 
