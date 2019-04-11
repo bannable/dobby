@@ -61,11 +61,13 @@ RSpec.describe Dobby::Options do
                                                the specified file instead of requesting the
                                                DST json file from a remote.
                   --releases ONE,TWO           Limit the packages returned by a VulnSource to
-                                               these releases. Default vaires with selected
+                                               these releases. Default varies with selected
                                                VulnSource.
-                  --bzr-bin PATH               VulnSource::Ubuntu - Path to the "bzr" binary.
+                  --git-bin PATH               VulnSource::Ubuntu - Path to the "git" binary.
+                  --local-repo PATH            VulnSource::Ubuntu - Path to the Ubuntu Security
+                                               git repo on the local filesystem
                   --tracker-repo URI           VulnSource::Ubuntu - Path to the security tracker
-                                               bazaar repository remote.
+                                               git repository remote.
                   --cve-url-prefix URL         URI prefix used for building CVE links.
         HELP
 

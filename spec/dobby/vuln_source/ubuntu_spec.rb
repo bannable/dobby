@@ -16,8 +16,8 @@ RSpec.describe Dobby::VulnSource::Ubuntu do
 
   before(:each) do
     allow(src).to receive(:modified_entries) { test_data_path }
-    allow(src).to receive(:bzr_revno) { '1' }
-    allow(src).to receive(:branch_or_pull) { true }
+    allow(src).to receive(:git_commit) { '1' }
+    allow(src).to receive(:clone_or_pull) { true }
   end
 
   describe '#update' do
@@ -40,7 +40,7 @@ RSpec.describe Dobby::VulnSource::Ubuntu do
       it 'is true for a second update if something has changed' do
         subject.update
         expect do
-          allow(src).to receive(:bzr_revno).and_return('2')
+          allow(src).to receive(:git_commit).and_return('2')
         end.to change { subject.update.changed? }.from(false).to(true)
       end
     end
@@ -51,7 +51,9 @@ RSpec.describe Dobby::VulnSource::Ubuntu do
 
     context 'content format' do
       shared_examples_for 'a parsed ubuntu cve entry' do |versions|
-        let(:defect) { entries[pkg] }
+        let(:identifier) { 'CVE-2017-5430' }
+        let(:defect) { entries[pkg].find { |d| d.identifier == identifier } }
+
         it 'has CVE-2017-5430' do
           expect(defect.identifier).to eq('CVE-2017-5430')
         end

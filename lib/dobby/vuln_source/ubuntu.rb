@@ -3,32 +3,29 @@
 module Dobby
   module VulnSource
     # Vulnerability source for Ubuntu systems. This class uses the Ubuntu CVE
-    # Tracker as its' remote source by checking out the bazaar repository.
-    #
-    # @note This requires bazaar to be installed at /usr/bin/bzar unless
-    #   configured with a different path via the bzr option.
+    # Tracker as its' remote source by checking out the git repository.
     class Ubuntu < AbstractVulnSource
       DEFAULT_RELEASE = 'xenial'
-      args %i[releases cve_url_prefix bzr_bin bzr_repo tracker_repo]
+      args %i[releases cve_url_prefix git_bin local_repo_path tracker_repo]
 
       option :test_mode, false
       option :releases, [DEFAULT_RELEASE]
 
-      option :bzr_bin, '/usr/bin/bzr'
-      option :cve_url_prefix, 'http://people.ubuntu.com/~ubuntu-security/cve/'
-      option :tracker_repo, 'https://launchpad.net/ubuntu-cve-tracker'
+      option :git, '/usr/bin/git'
+      option :cve_url_prefix, 'https://people.ubuntu.com/~ubuntu-security/cve/'
+      option :tracker_repo, 'https://git.launchpad.net/ubuntu-cve-tracker'
 
       # rubocop:disable Layout/AlignArray
       def self.cli_options
         [
           ['--releases ONE,TWO',   'Limit the packages returned by a VulnSource to',
-                                   'these releases. Default vaires with selected',
+                                   'these releases. Default varies with selected',
                                    'VulnSource.'],
-          ['--bzr-bin PATH',       'VulnSource::Ubuntu - Path to the "bzr" binary.'],
-          # ['--bzr-repo PATH',      'Path to the Ubuntu Security bazaar repo on the',
-          #                          'local system.'],
+          ['--git-bin PATH',       'VulnSource::Ubuntu - Path to the "git" binary.'],
+          ['--local-repo PATH',    'VulnSource::Ubuntu - Path to the Ubuntu Security',
+                                   'git repo on the local filesystem'],
           ['--tracker-repo URI',   'VulnSource::Ubuntu - Path to the security tracker',
-                                   'bazaar repository remote.'],
+                                   'git repository remote.'],
           ['--cve-url-prefix URL', 'URI prefix used for building CVE links.']
         ]
       end
@@ -63,73 +60,67 @@ module Dobby
       end
 
       def setup
-        @last_revno = nil
+        @last_commit = nil
       end
 
       # Provide an UpdateReponse sourced from Canoncial's Ubuntu CVE Tracker
-      # repository. This is a bazaar repository, and thus this strategy depends
-      # on the bzr binary being available. The strategy will avoid descending
-      # the repository if the repo's revno matches a previous revno.
+      # repository.
       #
       # @return [UpdateResponse]
       def update
-        branch_or_pull
-        revno = bzr_revno
-        return UpdateResponse.new(false) if revno == @last_revno
+        clone_or_pull
+        commit = git_commit
+        return UpdateResponse.new(false) if commit == @last_commit
 
         vuln_entries = VulnerabilityHash.new
         modified_entries.each do |file|
           data = parse_ubuntu_cve_file(File.readlines(file))
           vuln_entries.deep_merge!(data)
         end
-        @last_revno = revno
+        @last_commit = commit
         UpdateResponse.new(true, vuln_entries)
-      end
-
-      # Delete the bzr repository
-      def clean
-        Dir.rmdir(options.local_repo_path)
       end
 
       private
 
-      # Determine whether the repo needs to be branched (because it doesn't
+      # Determine whether the repo needs to be cloned (because it doesn't
       # exist) or pulled (because it already exists), and then do that.
       #
       # @return [Boolean]
-      def branch_or_pull
+      def clone_or_pull
         if Dir.exist?(options.local_repo_path)
           pull(options.local_repo_path)
         else
-          branch(options.local_repo_path)
+          clone(options.local_repo_path)
         end
       end
 
-      def branch(path)
+      def clone(path)
         FileUtils.mkdir_p path
         Dir.chdir(path) do
-          return system(options.bzr_bin.to_s, 'branch', '--use-existing-dir',
+          return system(options.git.to_s, 'clone',
                         options.tracker_repo.to_s, '.')
         end
       end
 
       def pull(path)
         Dir.chdir(path) do
-          return system(options.bzr_bin.to_s, 'pull', '--overwrite')
+          return system(options.git.to_s, 'pull')
         end
       end
 
-      # Retrieve bazaar revision number
+      # Retrieve the latest commit hash
       #
       # @return [String]
-      def bzr_revno
-        stdout, = Open3.capture2(options.bzr_bin, 'revno', options.local_repo_path)
-        stdout.strip
+      def git_commit
+        Dir.chdir(options.local_repo_path) do
+          stdout, = Open3.capture2(options.git, 'log', '-n', '1',
+                                   '--pretty=format:"%H"')
+          stdout.strip
+        end
       end
 
-      # Returns a list of all interesting files in the bazaar repository.
-      #
-      # @note The library cannot currently support differential updates :(
+      # Returns a list of all interesting files in the repository.
       #
       # @return [Array<String>]
       def modified_entries
@@ -138,11 +129,12 @@ module Dobby
       end
 
       def parse_ubuntu_cve_file(file_lines)
-        entries = Hash.new { |h, k| h[k] = {} }
+        entries = Hash.new { |h, k| h[k] = [] }
         fixed_versions = Hash.new { |h, k| h[k] = [] }
         severity = Severity::Unknown
 
-        identifier = description = link = nil
+        identifier = link = nil
+        description = ''
         more = false
 
         file_lines.each do |line|
@@ -150,7 +142,7 @@ module Dobby
           next if line.start_with?('#') || line.empty?
 
           if line.start_with?('Candidate:')
-            identifier = line.split[1]
+            identifier = line.split(':')[1].strip
             link = options.cve_url_prefix + identifier
             next
           elsif line.start_with?('Priority:')
@@ -166,7 +158,7 @@ module Dobby
               description.strip!
               more = false
             else
-              description = description + ' ' + line.strip
+              description << line.rstrip
             end
             next
           end
@@ -195,7 +187,7 @@ module Dobby
         end
 
         fixed_versions.each do |package, versions|
-          entries[package] = Defect.new(
+          entries[package] << Defect.new(
             identifier: identifier,
             description: description,
             severity: severity,
