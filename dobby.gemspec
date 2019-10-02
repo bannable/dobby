@@ -35,7 +35,7 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'exe'
   spec.executables   = ['dobby']
 
-  spec.add_development_dependency 'rake', '~> 12.0'
+  spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rubocop', '~> 0.52'
   spec.add_development_dependency 'simplecov', '~> 0'
