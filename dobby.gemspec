@@ -43,7 +43,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'apt-pkg', ['~> 0.4', '>= 0.2']
   spec.add_runtime_dependency 'curb', '~> 0.9'
-  spec.add_runtime_dependency 'hashie', '~> 3.5'
+  spec.add_runtime_dependency 'hashie', '>= 3.5', '< 5.0'
   spec.add_runtime_dependency 'oj', '~> 3'
   spec.add_runtime_dependency 'parallel', '~> 1.12'
   spec.add_runtime_dependency 'powerpack', '~> 0.1'
